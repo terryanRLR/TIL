@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="theme-color" content="#181818">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>엔진 센서 결함 예측 대시보드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+@font-face {
+  font-family: 'GmarketSans';
+  src: url('https://cdn.jsdelivr.net/gh/fonts-archive/GmarketSans/GmarketSansBold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'GmarketSans';
+  src: url('https://cdn.jsdelivr.net/gh/fonts-archive/GmarketSans/GmarketSansMedium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+:root {
+  --bg-dark:   #181818;
+  --bg-card:   #212020;
+  --bg-card2:  #292626;
+  --accent:    #D88187;
+  --accent2:   #8F2F30;
+  --accent3:   #f0a8ae;
+  --teal:      #00c8c0;
+  --teal2:     #4adce8;
+  --text:      #f0e8e8;
+  --text-muted:#9a8585;
+  --border:    #3a2828;
+  --danger:    #ff5c5c;
+  --safe:      #7fd9a0;
+  --warn:      #e8b25a;
+  --gold:      #f0c060;
+  --silver:    #c0b8b8;
+  --bronze:    #c08060;
+}
+body.light-mode {
+  --bg-dark:   #f7f1f0;
+  --bg-card:   #ffffff;
+  --bg-card2:  #fdf5f4;
+  --accent:    #8F2F30;
+  --accent2:   #6a1f20;
+  --accent3:   #b5484c;
+  --teal:      #0e8a82;
+  --teal2:     #12736c;
+  --text:      #241a1a;
+  --text-muted:#7a5f5f;
+  --border:    #e8d5d3;
+  --danger:    #c0302f;
+  --safe:      #1f8a55;
+  --warn:      #a06a10;
+  --gold:      #a07010;
+  --silver:    #6f6f6f;
+  --bronze:    #7a4820;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg-dark);
+  color: var(--text);
+  font-family: 'GmarketSans', 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+.skip-nav {
+  position: absolute; top: -100px; left: 8px; z-index: 1000;
+  background: var(--accent); color: #fff; font-size: 13px; font-weight: 700;
+  padding: 8px 16px; border-radius: 6px; text-decoration: none; transition: top .2s;
+}
+.skip-nav:focus { top: 8px; }
+:focus-visible { outline: 2px solid var(--accent3); outline-offset: 2px; border-radius: 4px; }
+
+/* ---------- Header ---------- */
+.header {
+  position: relative; overflow: hidden;
+  background: linear-gradient(105deg, #1a0808 0%, #160e10 22%, #100c0c 50%, #0d1010 78%, #0a0e0e 100%);
+  border-bottom: 1px solid rgba(143,47,48,.35);
+  box-shadow: 0 4px 32px rgba(0,0,0,.8);
+  padding: 20px 24px 18px;
+}
+body.light-mode .header {
+  background: linear-gradient(105deg, #2a1010 0%, #241414 40%, #1c1414 100%);
+}
+.header-glow {
+  position: absolute; top: -40px; left: -20px; width: 320px; height: 200px;
+  background: radial-gradient(ellipse, rgba(143,47,48,.22) 0%, transparent 65%);
+  pointer-events: none;
+}
+.header-glow-r {
+  position: absolute; top: -50px; right: -30px; width: 320px; height: 220px;
+  background: radial-gradient(ellipse, rgba(0,200,192,.10) 0%, transparent 65%);
+  pointer-events: none;
+}
+.header-line {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #8F2F30 12%, #D88187 32%, #00c8c0 62%, #4adce8 82%, transparent 100%);
+}
+.header-inner { position: relative; z-index: 1; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.header-deco { width: 5px; height: 52px; border-radius: 3px; flex-shrink: 0;
+  background: linear-gradient(180deg, #4adce8 0%, #00a890 100%);
+  box-shadow: 0 0 14px rgba(74,220,232,.5); }
+.title-block { flex: 1; min-width: 220px; }
+.title-eyebrow { font-family: 'Noto Sans KR', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2.5px;
+  color: var(--accent3); text-transform: uppercase; opacity: .85; margin-bottom: 4px; }
+.title-main { font-size: 24px; font-weight: 700; letter-spacing: -.5px; line-height: 1.25;
+  text-shadow: 0 0 24px rgba(143,47,48,.65), 0 2px 6px rgba(0,0,0,.9); color: #f5eeec; }
+body.light-mode .title-main { color: #fff; }
+.title-sub { font-family: 'Noto Sans KR', sans-serif; font-size: 12.5px; color: rgba(230,210,208,.65); margin-top: 5px; }
+body.light-mode .title-sub { color: rgba(255,240,238,.75); }
+.header-badges { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.hbadge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: .5px;
+  border: 1px solid rgba(216,129,135,.4); background: rgba(143,47,48,.14); color: var(--accent3);
+  font-family: 'Noto Sans KR', sans-serif; white-space: nowrap; }
+.mode-toggle-btn {
+  padding: 6px 14px; border-radius: 20px; border: 1.5px solid rgba(216,129,135,.4);
+  background: rgba(143,47,48,.12); color: var(--accent3); font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px; font-weight: 700; cursor: pointer; transition: .2s; white-space: nowrap;
+}
+.mode-toggle-btn:hover { background: rgba(143,47,48,.24); border-color: var(--accent); }
+
+/* ---------- Tabs ---------- */
+.tabs-nav {
+  display: flex; background: var(--bg-card); border-bottom: 2px solid var(--border);
+  padding: 0 20px; overflow-x: auto; box-shadow: 0 2px 12px rgba(0,0,0,.25);
+  position: sticky; top: 0; z-index: 50;
+}
+.tab-btn {
+  padding: 14px 20px 12px; background: transparent; border: none; border-bottom: 3px solid transparent;
+  color: var(--text-muted); font-family: 'Noto Sans KR', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; white-space: nowrap; letter-spacing: .3px; transition: .18s; position: relative; margin-bottom: -2px;
+}
+.tab-btn .tnum { opacity: .55; font-weight: 900; margin-right: 4px; }
+.tab-btn:hover:not(.active) { color: var(--text); background: rgba(216,129,135,.06); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: rgba(216,129,135,.07); }
+.tab-panel { display: none; padding: 22px 20px 60px; max-width: 1180px; margin: 0 auto; }
+.tab-panel.active { display: block; animation: fadeIn .25s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ---------- Section header ---------- */
+.sec-header { display: flex; align-items: baseline; gap: 10px; margin: 30px 0 14px; }
+.sec-header:first-child { margin-top: 0; }
+.sec-header .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px rgba(216,129,135,.6); flex-shrink:0; }
+.sec-header h2 { font-size: 17px; letter-spacing: .5px; }
+.sec-header .sec-note { font-family: 'Noto Sans KR', sans-serif; font-size: 12px; color: var(--text-muted); }
+
+/* ---------- Cards / grid ---------- */
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; }
+.showcase-area { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+.hero-quote {
+  background: linear-gradient(120deg, rgba(143,47,48,.14), rgba(0,200,192,.05));
+  border: 1px solid rgba(216,129,135,.3); border-radius: 14px; padding: 22px 24px; margin-bottom: 4px;
+}
+.hero-quote .hq-q { font-size: 12px; font-weight: 700; letter-spacing: 2px; color: var(--accent3); font-family:'Noto Sans KR',sans-serif; margin-bottom: 8px; }
+.hero-quote .hq-main { font-size: 18px; font-weight: 700; line-height: 1.5; }
+.hero-quote .hq-sub { font-family: 'Noto Sans KR', sans-serif; font-size: 13px; color: var(--text-muted); margin-top: 10px; line-height: 1.6; }
+
+.stat-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 12px; text-align: center; }
+.stat-card .sv { font-size: 21px; font-weight: 900; color: var(--accent3); }
+.stat-card .sl { font-family: 'Noto Sans KR', sans-serif; font-size: 10.5px; color: var(--text-muted); margin-top: 3px; letter-spacing: .3px; }
+
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.mini-card { background: var(--bg-card2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.mini-card h3 { font-size: 13.5px; margin-bottom: 6px; color: var(--accent3); }
+.mini-card p, .mini-card li { font-family: 'Noto Sans KR', sans-serif; font-size: 12.5px; color: var(--text-muted); line-height: 1.65; }
+.mini-card ul { padding-left: 16px; margin-top: 4px; }
+
+.badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 10.5px; font-weight: 700;
+  letter-spacing: .5px; border: 1px solid; font-family: 'Noto Sans KR', sans-serif; white-space: nowrap; }
+.badge-gold { background: rgba(216,129,135,.12); border-color: var(--accent); color: var(--accent3); }
+.badge-teal { background: rgba(0,200,192,.10); border-color: var(--teal); color: var(--teal); }
+.badge-safe { background: rgba(127,217,160,.12); border-color: var(--safe); color: var(--safe); }
+.badge-danger { background: rgba(255,92,92,.12); border-color: var(--danger); color: var(--danger); }
+.badge-warn { background: rgba(232,178,90,.12); border-color: var(--warn); color: var(--warn); }
+
+/* ---------- pipeline flow ---------- */
+.flow { display: flex; align-items: stretch; gap: 6px; flex-wrap: wrap; }
+.flow-step { flex: 1; min-width: 150px; background: var(--bg-card2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; position: relative; }
+.flow-step .fs-n { font-size: 10px; font-weight: 900; color: var(--accent3); font-family:'Noto Sans KR',sans-serif; letter-spacing:1px; }
+.flow-step .fs-t { font-size: 13px; font-weight: 700; margin: 3px 0 5px; }
+.flow-step .fs-d { font-family: 'Noto Sans KR', sans-serif; font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+.flow-arrow { display: flex; align-items: center; color: var(--text-muted); font-size: 16px; padding: 0 2px; flex-shrink:0; }
+
+/* ---------- bar list (css bar chart) ---------- */
+.bar-list { display: flex; flex-direction: column; gap: 9px; }
+.bar-row { display: grid; grid-template-columns: 150px 1fr auto; align-items: center; gap: 10px; }
+.bar-row .br-label { font-family: 'Noto Sans KR', sans-serif; font-size: 12px; font-weight: 700; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { position: relative; height: 20px; background: var(--bg-card2); border-radius: 5px; overflow: hidden; border: 1px solid var(--border); }
+.bar-fill { position: absolute; top: 0; left: 0; height: 100%; border-radius: 5px 0 0 5px;
+  background: linear-gradient(90deg, var(--accent2), var(--accent)); transition: width .5s cubic-bezier(.2,.8,.2,1); }
+.bar-fill.teal { background: linear-gradient(90deg, var(--teal2), var(--teal)); }
+.bar-row .br-val { font-family: 'Noto Sans KR', sans-serif; font-size: 11px; color: var(--text-muted); white-space: nowrap; min-width: 92px; }
+
+/* diverging bar */
+.div-row { display: grid; grid-template-columns: 96px 1fr 64px; align-items: center; gap: 10px; }
+.div-row .dr-label { font-family: 'Noto Sans KR', sans-serif; font-size: 12px; font-weight: 700; text-align: right; }
+.div-track { position: relative; height: 20px; background: var(--bg-card2); border-radius: 5px; border: 1px solid var(--border); overflow: visible; }
+.div-zero { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--text-muted); opacity: .5; left: 50%; }
+.div-bound { position: absolute; top: -3px; bottom: -3px; width: 1px; border-left: 1px dashed var(--danger); opacity: .55; }
+.div-fill { position: absolute; top: 2px; bottom: 2px; border-radius: 3px; background: var(--accent3); }
+.div-row .dr-val { font-family: 'Noto Sans KR', sans-serif; font-size: 11px; color: var(--text-muted); text-align: left; }
+
+/* ---------- podium ---------- */
+.podium { display: flex; align-items: flex-end; justify-content: center; gap: 22px; padding: 20px 0 6px; }
+.podium-item { display: flex; flex-direction: column; align-items: center; }
+.podium-rank { font-family: 'Noto Sans KR', sans-serif; font-size: 11px; font-weight: 900; letter-spacing: 1px; margin-bottom: 8px; }
+.podium-medal { border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-weight: 900; border: 3px solid; background: var(--bg-card2); }
+.p1 .podium-medal { width: 92px; height: 92px; font-size: 26px; border-color: var(--gold); color: var(--gold); box-shadow: 0 0 24px rgba(240,192,96,.35); }
+.p2 .podium-medal { width: 76px; height: 76px; font-size: 21px; border-color: var(--silver); color: var(--silver); }
+.p3 .podium-medal { width: 68px; height: 68px; font-size: 19px; border-color: var(--bronze); color: var(--bronze); }
+.p1 .podium-rank { color: var(--gold); } .p2 .podium-rank { color: var(--silver); } .p3 .podium-rank { color: var(--bronze); }
+.podium-name { font-size: 13px; font-weight: 700; margin-top: 8px; }
+.podium-val { font-family: 'Noto Sans KR', sans-serif; font-size: 12px; color: var(--accent3); font-weight: 700; margin-top: 2px; }
+
+/* ---------- six-grid ---------- */
+.six-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 16px; }
+.six-item { background: var(--bg-card2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 8px; text-align: center; transition: .18s; }
+.six-item:hover { transform: translateY(-3px); border-color: var(--accent); }
+.six-rank { font-family: 'Noto Sans KR', sans-serif; font-size: 10px; color: var(--text-muted); font-weight: 700; }
+.six-name { font-size: 12.5px; font-weight: 700; margin: 4px 0 2px; }
+.six-val { font-family: 'Noto Sans KR', sans-serif; font-size: 11.5px; color: var(--accent3); font-weight: 700; }
+
+/* issue grid (six-grid reused) */
+.issue-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+.issue-card { background: var(--bg-card2); border: 1px solid var(--border); border-radius: 10px; padding: 13px 15px; transition: .18s; }
+.issue-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.issue-card .ic-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.issue-card .ic-num { font-family: 'Noto Sans KR', sans-serif; font-size: 10px; font-weight: 900; color: var(--text-muted); }
+.issue-card h4 { font-size: 13px; margin-bottom: 4px; line-height: 1.4; }
+.issue-card p { font-family: 'Noto Sans KR', sans-serif; font-size: 11.5px; color: var(--text-muted); line-height: 1.55; }
+
+/* ---------- toggle / filter buttons ---------- */
+.seg-toggle { display: inline-flex; background: var(--bg-card2); border: 1px solid var(--border); border-radius: 8px; padding: 3px; gap: 2px; }
+.seg-btn { padding: 6px 16px; border-radius: 6px; border: none; background: transparent; color: var(--text-muted);
+  font-family: 'Noto Sans KR', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: .15s; }
+.seg-btn.active { background: var(--accent); color: #1a1010; }
+body.light-mode .seg-btn.active { color: #fff; }
+
+/* ---------- confusion grid ---------- */
+.cm-wrap { display: flex; gap: 24px; flex-wrap: wrap; align-items: center; }
+.cm-grid { display: grid; grid-template-columns: 70px repeat(2, 76px); grid-template-rows: 22px repeat(2, 50px); gap: 3px; }
+.cm-cell { display: flex; align-items: center; justify-content: center; font-family: 'Noto Sans KR', sans-serif; font-size: 12px; border-radius: 6px; }
+.cm-hdr { background: transparent; color: var(--text-muted); font-size: 10.5px; font-weight: 700; }
+.cm-rowlabel { background: transparent; color: var(--text-muted); font-size: 10.5px; font-weight: 700; justify-content: flex-end; padding-right: 4px; }
+.cm-val { background: var(--bg-card2); border: 1px solid var(--border); flex-direction: column; font-weight: 700; }
+.cm-val .cmv-n { font-size: 14px; }
+.cm-val .cmv-p { font-size: 9.5px; color: var(--text-muted); font-weight: 400; }
+.cm-val.correct { background: rgba(127,217,160,.14); border-color: var(--safe); color: var(--safe); }
+.cm-val.mixed { background: rgba(255,92,92,.14); border-color: var(--danger); color: var(--danger); }
+
+/* ---------- table ---------- */
+table.dt { width: 100%; border-collapse: collapse; font-family: 'Noto Sans KR', sans-serif; font-size: 12px; }
+table.dt th, table.dt td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+table.dt th { color: var(--text-muted); font-weight: 700; font-size: 11px; letter-spacing: .3px; }
+table.dt td.num { text-align: right; font-weight: 700; }
+
+/* ---------- radar / donut svg wrap ---------- */
+.chart-flex { display: flex; gap: 26px; flex-wrap: wrap; align-items: center; }
+.legend { display: flex; flex-direction: column; gap: 8px; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-family: 'Noto Sans KR', sans-serif; font-size: 12px; }
+.legend-sw { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+.legend-item .li-name { font-weight: 700; }
+.legend-item .li-desc { color: var(--text-muted); font-size: 11px; }
+
+.callout { display: flex; align-items: center; gap: 16px; background: linear-gradient(120deg, rgba(255,92,92,.1), rgba(143,47,48,.06));
+  border: 1px solid rgba(255,92,92,.35); border-radius: 12px; padding: 16px 20px; margin: 14px 0; }
+.callout .co-num { font-size: 32px; font-weight: 900; color: var(--danger); white-space: nowrap; }
+.callout .co-text { font-family: 'Noto Sans KR', sans-serif; font-size: 13px; line-height: 1.6; color: var(--text); }
+.callout.safe { background: linear-gradient(120deg, rgba(127,217,160,.1), rgba(0,200,192,.06)); border-color: rgba(127,217,160,.35); }
+.callout.safe .co-num { color: var(--safe); }
+
+footer { text-align: center; padding: 30px 20px 40px; font-family: 'Noto Sans KR', sans-serif; font-size: 11.5px; color: var(--text-muted); line-height: 1.8; border-top: 1px solid var(--border); margin-top: 30px; }
+footer a { color: var(--accent3); text-decoration: none; }
+
+@media (max-width: 900px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  .six-grid { grid-template-columns: repeat(3, 1fr); }
+  .issue-grid { grid-template-columns: 1fr; }
+  .flow { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); align-self: center; }
+  .chart-flex { flex-direction: column; }
+  .bar-row { grid-template-columns: 96px 1fr; }
+  .bar-row .br-label { white-space: normal; }
+  .bar-row .br-val { grid-column: 2; justify-self: end; }
+  .title-main { font-size: 19px; }
+}
+</style>
+</head>
+<body>
+<a class="skip-nav" href="#main">본문으로 건너뛰기</a>
+
+<header class="header" role="banner">
+  <div class="header-glow" aria-hidden="true"></div>
+  <div class="header-line" aria-hidden="true"></div>
+  <div class="header-glow-r" aria-hidden="true"></div>
+  <div class="header-inner">
+    <div class="header-deco" aria-hidden="true"></div>
+    <div class="title-block">
+      <div class="title-eyebrow">SPARTA CLUB · 심화 프로젝트 · 모빌리티</div>
+      <div class="title-main">엔진 센서 데이터 기반 결함 예측 &amp; 품질관리 대시보드</div>
+      <div class="title-sub">팀 삼시세끼 · 55,998행 엔진 센서 데이터로 정상/결함을 분류하고, 어떤 변수가 결함과 관련 깊은지 통계적으로 규명</div>
+    </div>
+    <div class="header-badges">
+      <span class="hbadge">삼시세끼</span>
+      <button class="mode-toggle-btn" id="modeToggleBtn" type="button">☀ 라이트 모드</button>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs-nav" aria-label="대시보드 탭">
+  <button class="tab-btn active" data-tab="overview"><span class="tnum">01</span>개요</button>
+  <button class="tab-btn" data-tab="eda"><span class="tnum">02</span>EDA</button>
+  <button class="tab-btn" data-tab="stats"><span class="tnum">03</span>통계 검정</button>
+  <button class="tab-btn" data-tab="ml"><span class="tnum">04</span>머신러닝</button>
+  <button class="tab-btn" data-tab="conclusion"><span class="tnum">05</span>결론</button>
+</nav>
+
+<main id="main">
+
+<!-- ============ TAB 1: 개요 ============ -->
+<div class="tab-panel active" id="tab-overview">
+  <div class="hero-quote">
+    <div class="hq-q">Q. 자동차 품질 관리의 핵심?</div>
+    <div class="hq-main">센서 데이터를 통한 신속·정확한 결함 탐지</div>
+    <div class="hq-sub">그러나 기계적 고장과 전기적 고장이 유사한 센서 패턴을 보이는 경우가 있음. 오진으로 인한 수리 비용 증가 및 품질 저하를 막기 위한 <b style="color:var(--accent3)">데이터 주도적(Data-Driven) 해결책</b>이 필요함.</div>
+  </div>
+
+  <div class="sec-header"><div class="dot"></div><h2>프로젝트 한눈에 보기</h2></div>
+  <div class="stat-grid" id="statGrid"></div>
+
+  <div class="sec-header"><div class="dot"></div><h2>분석 목표</h2></div>
+  <div class="grid-3">
+    <div class="mini-card"><h3>① 구조 파악</h3><p>엔진 센서 데이터의 구조와 결함 패턴을 파악하고, EDA → 통계 검정 → 모델링 순서로 분석을 진행한다.</p></div>
+    <div class="mini-card"><h3>② 유의미 변수 도출</h3><p>통계적으로 유의미한 변수를 찾고, 머신러닝 모델로 결함 예측 가능성을 확인한다.</p></div>
+    <div class="mini-card"><h3>③ 설명 가능한 결과물</h3><p>단순히 모델을 돌리는 데 그치지 않고, 왜 이 변수를 선택했고 어떤 결과가 나왔는지 설명할 수 있는 분석 결과물을 만든다.</p></div>
+  </div>
+
+  <div class="sec-header"><div class="dot"></div><h2>Fault 데이터 비중</h2><span class="sec-note">전처리 후 55,998행 (중복 1행 제거)</span></div>
+  <div class="showcase-area">
+    <div class="chart-flex">
+      <div id="donutWrap"></div>
+      <div class="legend" id="donutLegend"></div>
+    </div>
+  </div>
+
+  <div class="sec-header"><div class="dot"></div><h2>핵심 질문 3가지</h2></div>
+  <div class="grid-3">
+    <div class="mini-card"><h3>질문 1</h3><p>정상(Fault=0)과 결함 그룹(1~3) 간 주요 변수(MAP, TPS, RPM, 배기가스 농도 등)의 차이가 통계적으로 유의미한가?</p></div>
+    <div class="mini-card"><h3>질문 2</h3><p>통계적으로 유의미한 변수들로 결함 유형(0~3)을 예측하는 다중 분류 모델을 만들 수 있는가?</p></div>
+    <div class="mini-card"><h3>질문 3</h3><p>배기가스 농도(CO,HC,CO2,O2)와 공기-연료 비율(Lambda,AFR)이 특정 결함 유형과 어떤 연관성을 가지는가?</p></div>
+  </div>
+</div>
+
+<!-- ============ TAB 2: EDA ============ -->
+<div class="tab-panel" id="tab-eda">
+  <div class="sec-header"><div class="dot"></div><h2>변수 구성</h2><span class="sec-note">15개 → 다중공선성 제거 후 12개 특성</span></div>
+  <div class="showcase-area">
+    <table class="dt">
+      <thead><tr><th>카테고리</th><th>변수</th><th class="num">개수</th></tr></thead>
+      <tbody>
+        <tr><td>엔진 성능 지표</td><td>MAP · TPS · Force · Power · RPM</td><td class="num">5</td></tr>
+        <tr><td>배기가스 지표</td><td>CO · HC · CO2 · O2</td><td class="num">4</td></tr>
+        <tr><td>연료 효율성</td><td>Consumption L/H · Consumption L/100KM</td><td class="num">2</td></tr>
+        <tr><td>연소 상태 지표</td><td>AFR · Lambda <span class="badge badge-danger" style="margin-left:6px;">AFR 제거</span></td><td class="num">2</td></tr>
+        <tr><td>주행 조건 지표</td><td>Speed <span class="badge badge-danger" style="margin-left:6px;">제거</span></td><td class="num">1</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec-header"><div class="dot"></div><h2>다중공선성 처리</h2></div>
+  <div class="grid-2">
+    <div class="mini-card">
+      <h3><span class="badge badge-danger">상관계수 1.00 → 제거</span></h3>
+      <p style="margin-top:8px">Speed ↔ RPM, AFR ↔ Lambda 가 완벽한 선형 종속(상관계수 1.00). 수학적 중복이라 판단해 <b style="color:var(--text)">Speed, AFR</b>을 제거함.</p>
+    </div>
+    <div class="mini-card">
+      <h3><span class="badge badge-safe">상관계수 0.8대 → 유지</span></h3>
+      <p style="margin-top:8px">MAP↔TPS(0.88), TPS↔Force(0.89), MAP↔Force(0.88)는 통계적 중복이 아닌 '액셀 개방에 따른 엔진 부하 증가'라는 정상적인 물리적 인과관계로 해석해 유지함. (VIF 기준으로는 8개 변수가 연쇄 제거되는 문제가 있어 기각)</p>
+    </div>
+  </div>
+
+  <div class="sec-header"><div class="dot"></div><h2>이상치 처리 정책</h2><span class="sec-note">정상(Fault=0) 데이터 기준 IQR로 경계선 산정</span></div>
+  <div class="grid-2">
+    <div class="mini-card">
+      <h3>그룹 A · 명백한 고장의 증거</h3>
+      <p>MAP, Power, Consumption L/H·L/100KM, CO, O2, Lambda — 정상 상태에선 이상치가 거의 없고 결함 상태에서만 집중됨</p>
+    </div>
+    <div class="mini-card">
+      <h3>그룹 B · 정상적인 극한 주행 패턴</h3>
+      <p>TPS, Force, RPM, HC, CO2 — 정상 상태에서도 이상치가 다수 존재. 급가속 등 극한 조건이 만든 정상 패턴으로 해석</p>
+    </div>
+  </div>
+  <div class="callout safe" style="margin-top:14px">
+    <div class="co-text">두 그룹 모두 <b>이상치를 제거하지 않고</b>, 대신 이상치 영향을 덜 받는 트리 기반 모델(Random Forest 등)을 채택하는 방식으로 대응함.</div>
+  </div>
+
+  <div class="sec-header"><div class="dot"></div><h2>엔진 결함 3가지 도메인 정의</h2></div>
+  <div class="grid-3">
+    <div class="mini-card"><h3>🔴 Rich Mixture</h3><p>연소실에 공기보다 연료가 과도하게 주입되는 상태. 불완전연소 동반, 연료소비량 급증, 유해배기가스 배출량 증가</p></div>
+    <div class="mini-card"><h3>🟡 Lean Mixture</h3><p>연료가 부족하고 공기가 과도하게 유입되는 상태. 엔진출력 급감, Lambda 수치 급증</p></div>
+    <div class="mini-card"><h3>⚡ Low Voltage</h3><p>점화 플러그 및 전장 시스템의 전압 강하로 인해 발생. 엔진출력 급감, 센서 자체의 전기적 데이터 왜곡</p></div>
+  </div>
+
+  <div class="sec-header"><div class="dot"></div><h2>Fault 유형별 센서 프로파일</h2><span class="sec-note">12개 변수, 그룹별 평균값을 0~1로 정규화</span></div>
+  <div class="showcase-area">
+    <div class="chart-flex">
+      <div id="radarWrap"></div>
+      <div class="legend" id="radarLegend"></div>
+    </div>
+    <div class="callout" style="margin-top:16px;margin-bottom:0">
+      <div class="co-num">2 ≈ 3</div>
+      <div class="co-text">위 레이더에서 <b>Fault 2(연두)와 Fault 3(빨강) 폴리곤이 거의 겹쳐 보이는 것</b>이 바로 두 결함이 통계·모델링 단계에서 계속 구분되지 않는 이유입니다. RPM·Lambda가 함께 튀어나오고, O2·CO2도 비슷한 위치에 있습니다.</div>
+    </div>
+  </div>
+
+  <div class="sec-header"><div class="dot"></div><h2>Fault2 vs Fault3 구분 가설 3가지</h2><span class="sec-note">EDA 단계에서 세운 가설 — 통계 검정으로 이어짐</span></div>
+  <div class="grid-3">
+    <div class="mini-card"><h3>가설① 헛돌음</h3><p>고농도 O2 구간에서 Fault2는 RPM은 높고 Force는 낮음 → 연료 부족에 의한 기계적 헛돌음(Lean) 가능성. 단, 운전자 페달 조작이 반영된 결과일 수도 있어 해석 주의</p></div>
+    <div class="mini-card"><h3>가설② O2 급락</h3><p>Fault3는 O2 데이터가 급락 → 저전압으로 산소 센서 히터가 멈춰 0에 가까운 값이 찍혔을 가능성(Low Voltage)</p></div>
+    <div class="mini-card"><h3>가설③ 점화 불량</h3><p>Fault3는 Fault2 대비 CO 소폭 높고 CO2 소폭 낮음 → 저전압에 의한 점화 불량(Misfire) 추정</p></div>
+  </div>
+</div>
+
+<!-- ============ TAB 3: 통계 검정 ============ -->
+<div class="tab-panel" id="tab-stats">
+  <div class="sec-header"><div class="dot"></div><h2>검정 파이프라인</h2></div>
+  <div class="flow">
+    <div class="flow-step"><div class="fs-n">STEP 1</div><div class="fs-t">전제조건 검토</div><div class="fs-d">Shapiro-Wilk / Levene → 정규성·등분산성 위배 확인</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="fs-n">STEP 2</div><div class="fs-t">Kruskal-Wallis</div><div class="fs-d">12개 전 변수에서 4그룹 간 유의미한 차이(p&lt;0.05)</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="fs-n">STEP 3</div><div class="fs-t">Mann-Whitney U + 효과크기</div><div class="fs-d">사후 검정 + Rank-Biserial r로 p-value 함정 보완</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="fs-n">STEP 4</div><div class="fs-t">Pearson vs Spearman</div><div class="fs-d">선형/순위 상관 교차비교 → 비선형 관계 포착</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="fs-n">STEP 5</div><div class="fs-t">ML 방향 확정</div><div class="fs-d">선형모델 배제, 트리 기반 앙상블 채택</div></div>
+  </div>
+
+  <div class="sec-header"><div class="dot"></div><h2>Kruskal-Wallis 검정</h2><span class="sec-note">12개 변수 전부 p&lt;0.05 — H-statistic 클수록 그룹 간 차이 큼</span></div>
+  <div class="showcase-area"><div class="bar-list" id="kwBars"></div></div>
+
+  <div class="sec-header"><div class="dot"></div><h2>Fault2 vs Fault3 — 효과크기(Rank-Biserial r)</h2><span class="sec-note">점선 = |r|=0.1 (Negligible 경계)</span></div>
+  <div class="showcase-area"><div class="bar-list" id="effectBars"></div></div>
+  <div class="callout">
+    <div class="co-num">12 / 12</div>
+    <div class="co-text">Fault2 vs Fault3 비교에서 <b>12개 변수 전부 |r| &lt; 0.1 (Negligible)</b>. 일부는 p&lt;0.05로 "통계적으로 유의미"하게 나오지만, 55,998개라는 표본 크기 때문에 생긴 과잉 유의성일 뿐 실질적 차이는 없다고 판단함.</div>
+  </div>
+
+  <div class="sec-header"><div class="dot"></div><h2>결함 그룹 구분에 가장 기여하는 변수</h2><span class="sec-note">전체 그룹쌍 중 최대 |r| 기준 (Step 5)</span></div>
+  <div class="showcase-area"><div class="bar-list" id="importanceBars"></div></div>
+</div>
+
+<!-- ============ TAB 4: 머신러닝 ============ -->
+<div class="tab-panel" id="tab-ml">
+  <div class="sec-header"><div class="dot"></div><h2>9종 모델 교차 평가 (4-Class 기준)</h2><span class="sec-note">F1-score(macro) 기준 순위</span></div>
+  <div class="showcase-area">
+    <div class="podium" id="podium"></div>
+    <div class="six-grid" id="sixGrid"></div>
+  </div>
+
+  <div class="callout">
+    <div class="co-num">≈75%</div>
+    <div class="co-text">선형 모델(Logistic Regression, SVC, Naive Bayes)은 50%대에 머무는 반면, 트리 기반 앙상블은 <b>F1 75% 부근에서 전부 성능이 정체</b>됩니다. 아래 혼동행렬에서 그 이유를 확인할 수 있습니다.</div>
+  </div>
+
+  <div class="sec-header"><div class="dot"></div><h2>혼동행렬 — 최고 성능 모델(KNN) 기준</h2></div>
+  <div class="showcase-area">
+    <div class="cm-wrap">
+      <div>
+        <div class="cm-grid" id="cmGrid"></div>
+      </div>
+      <div style="flex:1;min-width:220px">
+        <p style="font-family:'Noto Sans KR',sans-serif;font-size:12.5px;color:var(--text-muted);line-height:1.7">
+          <b style="color:var(--safe)">Fault0·Fault1</b>은 Recall 1.00으로 완벽 분류.<br>
+          <b style="color:var(--danger)">Fault2·Fault3</b>는 서로 45~55% 확률로 뒤섞임 — 사실상 랜덤 수준.<br><br>
+          이 패턴은 KNN뿐 아니라 9종 모델 <b>전부에서 동일하게 재현</b>됩니다. SMOTE, XGBoost/LightGBM, Optuna 튜닝, Soft Voting, Stacking, SHAP 분석까지 시도했지만 전부 F1 0.75~0.76으로 수렴 — 방법론이 아닌 <b>데이터 구조 자체의 한계</b>로 결론.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-header"><div class="dot"></div><h2>4-Class vs 3-Class 성능 비교</h2><span class="sec-note">Fault2+3을 "출력계 이상"으로 통합했을 때의 변화</span></div>
+  <div class="showcase-area">
+    <div class="seg-toggle" role="group" aria-label="클래스 구성 전환">
+      <button class="seg-btn active" id="btn4c" type="button">4-Class (원본)</button>
+      <button class="seg-btn" id="btn3c" type="button">3-Class (통합 후)</button>
+    </div>
+    <div class="bar-list" id="classBars" style="margin-top:16px"></div>
+  </div>
+</div>
+
+<!-- ============ TAB 5: 결론 ============ -->
+<div class="tab-panel" id="tab-conclusion">
+  <div class="sec-header"><div class="dot"></div><h2>3-Class 통합 결과</h2></div>
+  <div class="grid-3" id="classCards"></div>
+
+  <div class="sec-header"><div class="dot"></div><h2>HARA 분석 &amp; ASIL 등급</h2><span class="sec-note">ISO 26262 기준 — 3-Class 통합의 실무적 정당성</span></div>
+  <div class="showcase-area">
+    <table class="dt">
+      <thead><tr><th>HARA 항목</th><th>등급</th><th>근거</th></tr></thead>
+      <tbody>
+        <tr><td>심각도 (Severity)</td><td><span class="badge badge-danger">S2</span></td><td>결함 미탐지 시 엔진 정지/출력 급저하 → 중상 및 생명 위협 가능</td></tr>
+        <tr><td>노출 빈도 (Exposure)</td><td><span class="badge badge-warn">E3</span></td><td>일상적 주행 중 항상 작동하는 시스템</td></tr>
+        <tr><td>제어 가능성 (Controllability)</td><td><span class="badge badge-warn">C2~C3</span></td><td>결함 미인지 상태에서 운전자 대응 어려움</td></tr>
+        <tr><td><b>엔진 결함 진단 시스템 (본 프로젝트)</b></td><td><span class="badge badge-gold">ASIL B~C</span></td><td>S2+E3+C2~C3 조합 → 결함 진단·경고 목적 모니터링 시스템으로 타당</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec-header"><div class="dot"></div><h2>실무 관점 — 정상 vs 결함 이진 판별력</h2><span class="sec-note">4개 클래스 세분류는 어려워도, "이상 여부" 자체는 정확히 잡아냄</span></div>
+  <div class="showcase-area"><div class="bar-list" id="binaryBars"></div></div>
+
+  <div class="sec-header"><div class="dot"></div><h2>기대 효과</h2></div>
+  <div class="grid-2">
+    <div class="mini-card"><h3>💰 품질 실패 비용(COPQ) 원천 차단</h3><p>어설픈 오분류로 인한 불필요한 부품 교체·정비사 공수 낭비를 제거하고, 높은 신뢰도로 이상 발생 자체를 확실하게 알람</p></div>
+    <div class="mini-card"><h3>🤝 AI × 엔지니어 Dual-Check 프로세스</h3><p>AI는 방대한 센서 데이터를 0.1초 단위로 모니터링해 출력 이상을 1차 즉각 탐지, 엔지니어는 알람 발생 시 연료/점화 계통으로 점검 범위를 좁혀 정비 타임라인 최소화</p></div>
+  </div>
+
+  <div class="sec-header"><div class="dot"></div><h2>완전한 진단을 위한 향후 과제</h2></div>
+  <div class="grid-2">
+    <div class="mini-card"><h3>🔌 전압 센서 추가</h3><p>Fault2·3은 원인은 다르지만 출력 결과가 같아 현재 센서 구성으로는 원리적으로 분리 불가. 배터리·알터네이터 전압 데이터 추가 수집이 필요</p></div>
+    <div class="mini-card"><h3>📡 입력 변수 &amp; 시계열 데이터</h3><p>현재는 결함 발생 "후"의 출력 데이터만 있음. 연료 분사량, 공기 주입량(MAF) 등 입력 변수와 시계열 구조를 확보하면 사전 예방 관점으로 고도화 가능</p></div>
+  </div>
+
+  <div class="sec-header"><div class="dot"></div><h2>이슈 요약</h2><span class="sec-note">전체 트러블슈팅 기록은 저장소의 이슈 문서 참고</span></div>
+  <div class="issue-grid" id="issueGrid"></div>
+
+  <div class="sec-header"><div class="dot"></div><h2>튜터 피드백</h2></div>
+  <div class="hero-quote">
+    <div class="hq-q">종합 피드백</div>
+    <div class="hq-main" style="font-size:15px;font-weight:500;line-height:1.7">"HARA 분석과 ASIL 등급 적용은 이 보고서의 결정적 차별점입니다 … 자동차 OEM 품질 부서에 제출해도 손색없는 출발점이니 자신감 가지고 발전시키시기 바랍니다."</div>
+    <div class="hq-sub">보완 제안: 다중공선성 판단에 VIF 정량 수치 보강, ASIL 등급 근거(Severity/Exposure/Controllability) 정량화, 결론부 한 문장 헤드라인 추가</div>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  본 대시보드는 팀 발표자료(PPT)와 프로젝트 통합 분석 노트북의 실제 실행 결과를 바탕으로 재구성되었습니다.<br>
+  [모빌리티] 엔진 센서 데이터 기반 결함 예측 및 품질관리 분석 · 팀 삼시세끼
+</footer>
+
+<script>
+/* ===================== DATA ===================== */
+const DATA = {
+  totalRows: 55998,
+  faultDist: [
+    { key:'Fault 0', label:'정상', value:16000, color:'#7fd9a0' },
+    { key:'Fault 1', label:'Rich (연료 과다)', value:10998, color:'#f0c060' },
+    { key:'Fault 2', label:'Lean (희박 연소)', value:15000, color:'#4adce8' },
+    { key:'Fault 3', label:'Low Voltage', value:14000, color:'#ff5c5c' },
+  ],
+  faultMeans: {
+    0: { MAP:1.97, TPS:1.48, Force:293.94, Power:4.15, RPM:2145.70, ConsLH:4.06, ConsL100:9.25, CO:2.16, HC:190.27, CO2:13.26, O2:0.60, Lambda:0.96 },
+    1: { MAP:1.75, TPS:1.28, Force:348.77, Power:5.89, RPM:2227.20, ConsLH:5.06, ConsL100:9.88, CO:3.17, HC:259.79, CO2:12.77, O2:0.59, Lambda:0.93 },
+    2: { MAP:1.78, TPS:1.38, Force:253.10, Power:6.25, RPM:2635.15, ConsLH:4.52, ConsL100:8.32, CO:1.32, HC:160.06, CO2:13.04, O2:0.59, Lambda:0.98 },
+    3: { MAP:1.80, TPS:1.40, Force:265.65, Power:6.56, RPM:2566.49, ConsLH:4.53, ConsL100:8.51, CO:1.36, HC:160.73, CO2:12.97, O2:0.56, Lambda:0.98 },
+  },
+  radarAxes: [
+    ['RPM','RPM'], ['Power','Power'], ['Force','Force'], ['TPS','TPS'], ['MAP','MAP'], ['Lambda','Lambda'],
+    ['O2','O2'], ['CO2','CO2'], ['HC','HC'], ['CO','CO'], ['ConsL100','L/100KM'], ['ConsLH','L/H'],
+  ],
+  kw: [
+    { label:'HC', h:10028.10, p:'p ≈ 0' },
+    { label:'CO', h:5994.93, p:'p ≈ 0' },
+    { label:'L/100KM', h:5099.52, p:'p ≈ 0' },
+    { label:'RPM', h:4077.19, p:'p ≈ 0' },
+    { label:'Lambda', h:3929.04, p:'p ≈ 0' },
+    { label:'Force', h:2104.42, p:'p ≈ 0' },
+    { label:'CO2', h:1932.52, p:'p ≈ 0' },
+    { label:'MAP', h:1471.35, p:'p ≈ 0' },
+    { label:'Power', h:986.35, p:'p=1.6e-213' },
+    { label:'TPS', h:911.27, p:'p=3.2e-197' },
+    { label:'L/H', h:656.08, p:'p=7.0e-142' },
+    { label:'O2', h:288.20, p:'p=3.6e-62' },
+  ],
+  effect: [
+    { label:'O2', r:-0.0662, p:'1.6e-22', sig:true },
+    { label:'CO2', r:-0.0590, p:'3.4e-18', sig:true },
+    { label:'L/100KM', r:0.0573, p:'2.9e-17', sig:true },
+    { label:'RPM', r:-0.0377, p:'2.8e-08', sig:true },
+    { label:'Lambda', r:-0.0346, p:'3.4e-07', sig:true },
+    { label:'HC', r:0.0331, p:'1.1e-06', sig:true },
+    { label:'Power', r:0.0181, p:'7.8e-03', sig:true },
+    { label:'CO', r:0.0144, p:'3.4e-02', sig:true },
+    { label:'Force', r:0.0127, p:'6.1e-02', sig:false },
+    { label:'L/H', r:-0.0108, p:'1.1e-01', sig:false },
+    { label:'TPS', r:-0.0099, p:'1.4e-01', sig:false },
+    { label:'MAP', r:0.0028, p:'6.8e-01', sig:false },
+  ],
+  importance: [
+    { label:'HC', r:0.5165, tier:'large', pair:'F0 vs F2' },
+    { label:'CO', r:0.3834, tier:'medium', pair:'F0 vs F2' },
+    { label:'L/100KM', r:0.3697, tier:'medium', pair:'F1 vs F2' },
+    { label:'RPM', r:0.3383, tier:'medium', pair:'F0 vs F2' },
+    { label:'Lambda', r:0.3179, tier:'medium', pair:'F1 vs F2' },
+    { label:'CO2', r:0.2629, tier:'small', pair:'F0 vs F3' },
+    { label:'Force', r:0.2536, tier:'small', pair:'F0 vs F2' },
+    { label:'MAP', r:0.2385, tier:'small', pair:'F1 vs F2' },
+    { label:'TPS', r:0.2193, tier:'small', pair:'F1 vs F2' },
+    { label:'Power', r:0.1789, tier:'small', pair:'F1 vs F2' },
+    { label:'L/H', r:0.1381, tier:'small', pair:'F1 vs F2' },
+    { label:'O2', r:0.1266, tier:'small', pair:'F0 vs F3' },
+  ],
+  models: [
+    { name:'KNN', f1_4c:0.7584, f1_3c:1.0000 },
+    { name:'HistGradientBoosting', f1_4c:0.7582, f1_3c:0.9999 },
+    { name:'Random Forest', f1_4c:0.7550, f1_3c:1.0000 },
+    { name:'Decision Tree', f1_4c:0.7550, f1_3c:0.9992 },
+    { name:'Extra Trees', f1_4c:0.7512, f1_3c:1.0000 },
+    { name:'Neural Network', f1_4c:0.7456, f1_3c:0.9996 },
+    { name:'Logistic Regression', f1_4c:0.5899, f1_3c:0.7795 },
+    { name:'SVC', f1_4c:0.5673, f1_3c:0.7511 },
+    { name:'Naive Bayes', f1_4c:0.3430, f1_3c:0.5761 },
+  ],
+  binaryRecall: [
+    { name:'Random Forest', recall:1.0000 },
+    { name:'KNN', recall:1.0000 },
+    { name:'Neural Network', recall:1.0000 },
+    { name:'HistGradientBoosting', recall:1.0000 },
+    { name:'Extra Trees', recall:1.0000 },
+    { name:'Decision Tree', recall:0.9999 },
+    { name:'SVC', recall:0.8970 },
+    { name:'Logistic Regression', recall:0.8925 },
+    { name:'Naive Bayes', recall:0.7455 },
+  ],
+  cm: { f0:3200, f1:2200, f2f2:1608, f2f3:1392, f3f2:1407, f3f3:1393 },
+  classAfter: [
+    { name:'Class 0 · Normal', value:16000, color:'#7fd9a0' },
+    { name:'Class 1 · Rich', value:10998, color:'#f0c060' },
+    { name:'Class 2 · Output Anomaly', value:29000, color:'#ff5c5c' },
+  ],
+  issues: [
+    { n:'01', t:'완벽한 다중공선성', d:'Speed↔RPM, AFR↔Lambda 상관계수 1.00 → 해당 변수만 제거 (VIF 방식은 기각)', status:'해결' },
+    { n:'02', t:'정규성·등분산성 위배', d:'Shapiro-Wilk/Levene 모두 위배 → 비모수 검정(Kruskal-Wallis, Mann-Whitney)으로 전환', status:'해결' },
+    { n:'03', t:'p-value 과잉 유의성', d:'표본 55,998개로 인한 함정 → 효과크기(rank-biserial r) 병행 산출로 보완', status:'해결' },
+    { n:'04', t:'이상치 제거 여부', d:'정상 기준 IQR로 그룹 A/B 재분류 → 미제거 + 이상치에 강한 트리 모델 채택', status:'해결' },
+    { n:'05', t:'Fault2 vs Fault3 구분 불가', d:'10여 가지 방법(SMOTE·부스팅·튜닝·앙상블·SHAP) 모두 F1 0.75대 수렴 → 3-Class 통합으로 우회', status:'미해결' },
+    { n:'06', t:'스케일러 선택', d:'이상치 많은 데이터 → MinMaxScaler 대신 StandardScaler 채택', status:'해결' },
+  ],
+};
+
+/* ===================== THEME ===================== */
+const modeBtn = document.getElementById('modeToggleBtn');
+modeBtn.addEventListener('click', () => {
+  const light = document.body.classList.toggle('light-mode');
+  modeBtn.textContent = light ? '🌙 다크 모드' : '☀ 라이트 모드';
+});
+
+/* ===================== TABS ===================== */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ===================== HELPERS ===================== */
+function fmtPct(v){ return (v*100).toFixed(1) + '%'; }
+function fmtF1(v){ return v.toFixed(4); }
+
+function barRow(label, pct, valText, teal){
+  return `<div class="bar-row">
+    <div class="br-label">${label}</div>
+    <div class="bar-track"><div class="bar-fill ${teal?'teal':''}" style="width:${pct}%"></div></div>
+    <div class="br-val">${valText}</div>
+  </div>`;
+}
+
+function divRow(label, r, pText, sig){
+  // scale: boundary at |r|=0.1 -> place at 25% / 75% of track width, zero at 50%
+  const track = 100; // %
+  const boundPct = 25; // distance from center to +-0.1 line, in % of track width on each side
+  const scale = boundPct / 0.10; // %-per-unit-r
+  const centerPct = 50;
+  const w = Math.min(Math.abs(r) * scale, centerPct - 2);
+  const left = r >= 0 ? centerPct : centerPct - w;
+  const sigBadge = sig ? '<span class="badge badge-warn" style="margin-left:6px;font-size:9px">유의미</span>' : '<span class="badge badge-teal" style="margin-left:6px;font-size:9px">차이없음</span>';
+  return `<div class="div-row">
+    <div class="dr-label">${label}</div>
+    <div class="div-track">
+      <div class="div-bound" style="left:${centerPct-boundPct}%"></div>
+      <div class="div-bound" style="left:${centerPct+boundPct}%"></div>
+      <div class="div-zero"></div>
+      <div class="div-fill" style="left:${left}%;width:${w}%"></div>
+    </div>
+    <div class="dr-val">r=${r>0?'+':''}${r.toFixed(4)}</div>
+  </div>` + `<div style="font-family:'Noto Sans KR',sans-serif;font-size:10px;color:var(--text-muted);margin:-5px 0 2px 106px">p=${pText} ${sigBadge}</div>`;
+}
+
+/* ===================== RENDER: OVERVIEW ===================== */
+document.getElementById('statGrid').innerHTML = [
+  { sv:'55,998', sl:'행 (15열)' },
+  { sv:'12', sl:'분석 최종 변수' },
+  { sv:'4→3', sl:'Fault 클래스' },
+  { sv:'9종', sl:'비교 모델' },
+  { sv:'100%', sl:'3-Class 최고 F1' },
+].map(s => `<div class="stat-card"><div class="sv">${s.sv}</div><div class="sl">${s.sl}</div></div>`).join('');
+
+(function renderDonut(){
+  const data = DATA.faultDist;
+  const total = data.reduce((a,b)=>a+b.value,0);
+  const cx=100, cy=100, r=78, rInner=48;
+  let angle = -90;
+  let paths = '';
+  data.forEach(d => {
+    const frac = d.value/total;
+    const sweep = frac*360;
+    const a0 = angle*Math.PI/180, a1=(angle+sweep)*Math.PI/180;
+    const x0=cx+r*Math.cos(a0), y0=cy+r*Math.sin(a0);
+    const x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
+    const large = sweep>180?1:0;
+    paths += `<path d="M${cx},${cy} L${x0.toFixed(2)},${y0.toFixed(2)} A${r},${r} 0 ${large} 1 ${x1.toFixed(2)},${y1.toFixed(2)} Z" fill="${d.color}" fill-opacity="0.88" stroke="var(--bg-card)" stroke-width="2"/>`;
+    angle += sweep;
+  });
+  const svg = `<svg width="200" height="200" viewBox="0 0 200 200">
+    ${paths}
+    <circle cx="${cx}" cy="${cy}" r="${rInner}" fill="var(--bg-card)"/>
+    <text x="${cx}" y="${cy-4}" text-anchor="middle" font-size="20" font-weight="900" fill="var(--text)" font-family="GmarketSans, sans-serif">${total.toLocaleString()}</text>
+    <text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="10.5" fill="var(--text-muted)" font-family="'Noto Sans KR',sans-serif">총 샘플</text>
+  </svg>`;
+  document.getElementById('donutWrap').innerHTML = svg;
+  document.getElementById('donutLegend').innerHTML = data.map(d => `
+    <div class="legend-item">
+      <span class="legend-sw" style="background:${d.color}"></span>
+      <span class="li-name">${d.key} · ${d.label}</span>
+      <span class="li-desc">${d.value.toLocaleString()}건 (${(d.value/total*100).toFixed(1)}%)</span>
+    </div>`).join('');
+})();
+
+/* ===================== RENDER: EDA (radar) ===================== */
+(function renderRadar(){
+  const axes = DATA.radarAxes;
+  const N = axes.length;
+  const cx=180, cy=170, maxR=130;
+  const faultColors = { 0:'#7fd9a0', 1:'#f0c060', 2:'#4adce8', 3:'#ff5c5c' };
+  const faultNames = { 0:'Fault 0 정상', 1:'Fault 1 Rich', 2:'Fault 2 Lean', 3:'Fault 3 LowV' };
+
+  // normalize per-axis across the 4 fault groups
+  const norm = {};
+  axes.forEach(([key]) => {
+    const vals = [0,1,2,3].map(f => DATA.faultMeans[f][key]);
+    const mn = Math.min(...vals), mx = Math.max(...vals);
+    norm[key] = {};
+    [0,1,2,3].forEach(f => {
+      norm[key][f] = mx===mn ? 0.5 : (DATA.faultMeans[f][key]-mn)/(mx-mn);
+    });
+  });
+
+  function pt(i, rad){
+    const a = -Math.PI/2 + i*(2*Math.PI/N);
+    return [cx + rad*Math.cos(a), cy + rad*Math.sin(a)];
+  }
+
+  let grid = '';
+  [0.25,0.5,0.75,1].forEach(f => {
+    const pts = axes.map((_,i) => pt(i, maxR*f).join(',')).join(' ');
+    grid += `<polygon points="${pts}" fill="none" stroke="var(--border)" stroke-width="1"/>`;
+  });
+  let axisLines = '', labels='';
+  axes.forEach(([key,label],i) => {
+    const [x,y] = pt(i, maxR);
+    axisLines += `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="var(--border)" stroke-width="1"/>`;
+    const [lx,ly] = pt(i, maxR+18);
+    labels += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="10.5" fill="var(--text-muted)" font-family="'Noto Sans KR',sans-serif">${label}</text>`;
+  });
+
+  let polys = '';
+  [0,1,2,3].forEach(f => {
+    const pts = axes.map(([key],i) => pt(i, norm[key][f]*maxR).join(',')).join(' ');
+    polys += `<polygon points="${pts}" fill="${faultColors[f]}" fill-opacity="0.10" stroke="${faultColors[f]}" stroke-width="2.2"/>`;
+  });
+
+  const svg = `<svg width="360" height="340" viewBox="0 0 360 340" style="width:100%;max-width:360px;height:auto;display:block">${grid}${axisLines}${polys}${labels}</svg>`;
+  document.getElementById('radarWrap').innerHTML = svg;
+  document.getElementById('radarLegend').innerHTML = [0,1,2,3].map(f => `
+    <div class="legend-item">
+      <span class="legend-sw" style="background:${faultColors[f]}"></span>
+      <span class="li-name">${faultNames[f]}</span>
+    </div>`).join('') + `<div class="li-desc" style="margin-top:6px;max-width:180px">각 축은 4개 그룹 평균 중 최소~최대를 0~1로 정규화한 값입니다.</div>`;
+})();
+
+/* ===================== RENDER: STATS ===================== */
+document.getElementById('kwBars').innerHTML = DATA.kw.map(d => {
+  const pct = (d.h / DATA.kw[0].h) * 100;
+  return barRow(d.label, pct, `H=${d.h.toFixed(1)} · ${d.p}`);
+}).join('');
+
+document.getElementById('effectBars').innerHTML = DATA.effect.map(d => divRow(d.label, d.r, d.p, d.sig)).join('');
+
+const tierColor = { large:'#ff5c5c', medium:'#e8b25a', small:'#9a8585' };
+document.getElementById('importanceBars').innerHTML = DATA.importance.map(d => {
+  const pct = (d.r / DATA.importance[0].r) * 100;
+  return `<div class="bar-row">
+    <div class="br-label">${d.label}</div>
+    <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:linear-gradient(90deg, ${tierColor[d.tier]}88, ${tierColor[d.tier]})"></div></div>
+    <div class="br-val">r=${d.r.toFixed(3)} (${d.tier}) · ${d.pair}</div>
+  </div>`;
+}).join('');
+
+/* ===================== RENDER: ML ===================== */
+(function renderML(){
+  const sorted = [...DATA.models].sort((a,b)=>b.f1_4c-a.f1_4c);
+  const top3 = [sorted[1], sorted[0], sorted[2]];
+  const medals=['2','1','3'], classes=['p2','p1','p3'];
+  document.getElementById('podium').innerHTML = top3.map((m,i) => `
+    <div class="podium-item ${classes[i]}">
+      <div class="podium-rank">No.${medals[i]}</div>
+      <div class="podium-medal">${medals[i]}</div>
+      <div class="podium-name">${m.name}</div>
+      <div class="podium-val">F1 ${fmtF1(m.f1_4c)}</div>
+    </div>`).join('');
+
+  document.getElementById('sixGrid').innerHTML = sorted.slice(3,9).map((m,i) => `
+    <div class="six-item">
+      <div class="six-rank">No.${i+4}</div>
+      <div class="six-name">${m.name}</div>
+      <div class="six-val">F1 ${fmtF1(m.f1_4c)}</div>
+    </div>`).join('');
+})();
+
+(function renderCM(){
+  const c = DATA.cm;
+  const cells = [
+    ['', 'cm-hdr', '예측 F2'], ['', 'cm-hdr', '예측 F3'],
+  ];
+  const grid = document.getElementById('cmGrid');
+  grid.innerHTML = `
+    <div class="cm-cell"></div>
+    <div class="cm-cell cm-hdr">예측 F2</div>
+    <div class="cm-cell cm-hdr">예측 F3</div>
+    <div class="cm-cell cm-rowlabel">실제 F2</div>
+    <div class="cm-cell cm-val correct"><div class="cmv-n">${c.f2f2}</div><div class="cmv-p">53.6%</div></div>
+    <div class="cm-cell cm-val mixed"><div class="cmv-n">${c.f2f3}</div><div class="cmv-p">46.4%</div></div>
+    <div class="cm-cell cm-rowlabel">실제 F3</div>
+    <div class="cm-cell cm-val mixed"><div class="cmv-n">${c.f3f2}</div><div class="cmv-p">50.3%</div></div>
+    <div class="cm-cell cm-val correct"><div class="cmv-n">${c.f3f3}</div><div class="cmv-p">49.8%</div></div>
+  `;
+})();
+
+(function renderClassToggle(){
+  const btn4 = document.getElementById('btn4c'), btn3 = document.getElementById('btn3c');
+  const wrap = document.getElementById('classBars');
+  const sorted = [...DATA.models].sort((a,b)=>b.f1_4c-a.f1_4c);
+  wrap.innerHTML = sorted.map(m => `
+    <div class="bar-row" data-name="${m.name}">
+      <div class="br-label">${m.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(m.f1_4c*100).toFixed(1)}%"></div></div>
+      <div class="br-val">F1 ${fmtF1(m.f1_4c)}</div>
+    </div>`).join('');
+  function setMode(is3c){
+    btn3.classList.toggle('active', is3c);
+    btn4.classList.toggle('active', !is3c);
+    wrap.querySelectorAll('.bar-row').forEach(row => {
+      const name = row.dataset.name;
+      const m = sorted.find(x=>x.name===name);
+      const v = is3c ? m.f1_3c : m.f1_4c;
+      row.querySelector('.bar-fill').style.width = (v*100).toFixed(1)+'%';
+      row.querySelector('.bar-fill').classList.toggle('teal', is3c);
+      row.querySelector('.br-val').textContent = 'F1 ' + fmtF1(v);
+    });
+  }
+  btn4.addEventListener('click', ()=>setMode(false));
+  btn3.addEventListener('click', ()=>setMode(true));
+})();
+
+/* ===================== RENDER: CONCLUSION ===================== */
+document.getElementById('classCards').innerHTML = DATA.classAfter.map(c => `
+  <div class="mini-card" style="border-left:3px solid ${c.color}">
+    <h3 style="color:${c.color}">${c.name}</h3>
+    <p style="font-size:16px;font-weight:900;color:var(--text)">${c.value.toLocaleString()}건</p>
+  </div>`).join('');
+
+document.getElementById('binaryBars').innerHTML = DATA.binaryRecall.map(d => barRow(d.name, d.recall*100, `Recall ${fmtF1(d.recall)}`, true)).join('');
+
+document.getElementById('issueGrid').innerHTML = DATA.issues.map(is => `
+  <div class="issue-card">
+    <div class="ic-top">
+      <span class="ic-num">ISSUE ${is.n}</span>
+      <span class="badge ${is.status==='해결'?'badge-safe':'badge-danger'}">${is.status}</span>
+    </div>
+    <h4>${is.t}</h4>
+    <p>${is.d}</p>
+  </div>`).join('');
+</script>
+</body>
+</html>

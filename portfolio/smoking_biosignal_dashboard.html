@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="theme-color" content="#14100f">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>생체 신호 기반 흡연 여부 비교 시각화 대시보드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet"></noscript>
+<style>
+@font-face {
+  font-family: 'GmarketSans';
+  src: url('https://cdn.jsdelivr.net/gh/fonts-archive/GmarketSans/GmarketSansBold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'GmarketSans';
+  src: url('https://cdn.jsdelivr.net/gh/fonts-archive/GmarketSans/GmarketSansMedium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+:root {
+  --smoker:      #A63A50;   /* 흡연자 강조 - Deep Red (팀 발표자료 팔레트) */
+  --highbmi:     #C65D6E;   /* 고BMI 강조 - Muted Rose Red */
+  --nonsmoker:   #7C8288;   /* 비흡연자 - Slate Gray */
+  --lowbmi:      #4A4342;   /* 저BMI / 기본선 - Charcoal */
+  --bg-dark:     #14100f;
+  --bg-card:     #1c1615;
+  --bg-card2:    #241b1a;
+  --text:        #f2eceb;
+  --text-muted:  #a89a97;
+  --border:      #362726;
+  --grid:        rgba(217,217,217,0.14);
+  --good:        #5fae86;
+  --radius-lg:   16px;
+  --radius-md:   10px;
+}
+body.light-mode {
+  --bg-dark:    #f7f1f0;
+  --bg-card:    #ffffff;
+  --bg-card2:   #faf3f2;
+  --text:       #241a19;
+  --text-muted: #715d5a;
+  --border:     #e8d7d5;
+  --grid:       rgba(74,67,66,0.14);
+  --nonsmoker:  #6B7075;
+  --lowbmi:     #8a8382;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg-dark);
+  color: var(--text);
+  font-family: 'GmarketSans', 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation: none !important; transition: none !important; }
+}
+img, svg { display: block; max-width: 100%; }
+
+/* ---------- 접근성 ---------- */
+.skip-nav {
+  position: absolute; top: -100px; left: 8px; z-index: 1000;
+  background: var(--smoker); color: #fff; font-size: 13px; font-weight: 700;
+  padding: 8px 16px; border-radius: 8px; text-decoration: none; transition: top 0.2s;
+}
+.skip-nav:focus { top: 8px; outline: 3px solid #fff; outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--highbmi); outline-offset: 2px; border-radius: 4px; }
+.tab-btn:focus-visible { outline-offset: -2px; }
+#a11yLive { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+
+/* ---------- 헤더 ---------- */
+.header {
+  position: relative; overflow: hidden;
+  background: linear-gradient(105deg, #1a0d0d 0%, #221312 35%, #1c1414 65%, #160f0f 100%);
+  border-bottom: 1px solid rgba(166,58,80,0.3);
+  box-shadow: 0 4px 32px rgba(0,0,0,0.6);
+  padding: 22px 24px 0;
+}
+.header-line {
+  position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--smoker) 15%, var(--highbmi) 45%, var(--nonsmoker) 75%, transparent 100%);
+}
+.header-inner {
+  max-width: 1180px; margin: 0 auto; display: flex; align-items: flex-end;
+  justify-content: space-between; gap: 20px; flex-wrap: wrap; padding-bottom: 18px;
+}
+.title-eyebrow {
+  font-size: 11px; letter-spacing: 3px; color: var(--highbmi); font-weight: 700;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.title-main { font-size: clamp(22px, 3.4vw, 32px); font-weight: 700; letter-spacing: -0.5px; }
+.title-sub { margin-top: 6px; font-size: 13px; color: var(--text-muted); font-family: 'Noto Sans KR', sans-serif; }
+.header-controls { display: flex; align-items: center; gap: 8px; }
+.mode-toggle-btn, .tts-hint {
+  background: var(--bg-card2); border: 1px solid var(--border); color: var(--text);
+  font-family: inherit; font-size: 12px; font-weight: 700; padding: 8px 14px;
+  border-radius: 999px; cursor: pointer; white-space: nowrap;
+}
+.mode-toggle-btn:hover { border-color: var(--highbmi); }
+
+.badge-row {
+  max-width: 1180px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px;
+}
+.badge {
+  font-size: 11.5px; font-weight: 700; padding: 6px 12px; border-radius: 999px;
+  border: 1px solid var(--border); background: rgba(166,58,80,0.1); color: var(--highbmi);
+  letter-spacing: 0.3px; font-family: 'Noto Sans KR', sans-serif;
+}
+.badge.alt { background: rgba(124,130,136,0.14); color: var(--text-muted); border-color: var(--border); }
+
+/* ---------- 탭 내비게이션 ---------- */
+.tabs-nav {
+  position: sticky; top: 0; z-index: 50; display: flex; overflow-x: auto;
+  background: var(--bg-dark); border-bottom: 1px solid var(--border);
+  max-width: 1180px; margin: 0 auto;
+}
+.tab-btn {
+  flex: 1 0 auto; background: none; border: none; color: var(--text-muted);
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 700; font-size: 14px;
+  padding: 14px 18px; cursor: pointer; position: relative; white-space: nowrap;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--smoker); }
+.tab-btn.active::after {
+  content: ''; position: absolute; left: 10px; right: 10px; bottom: -1px; height: 3px;
+  background: var(--smoker); border-radius: 3px 3px 0 0;
+}
+.tab-kbd {
+  display: inline-block; font-size: 9px; color: var(--text-muted); border: 1px solid var(--border);
+  border-radius: 4px; padding: 0 4px; margin-right: 6px; font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* ---------- 메인 레이아웃 ---------- */
+main { max-width: 1180px; margin: 0 auto; padding: 28px 20px 60px; }
+.tab-panel { display: none; animation: fadein 0.35s ease; }
+.tab-panel.active { display: block; }
+@keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.section-title { font-size: 20px; font-weight: 700; margin: 34px 0 4px; letter-spacing: -0.3px; }
+.section-title:first-child { margin-top: 0; }
+.section-desc { font-size: 13.5px; color: var(--text-muted); margin-bottom: 16px; font-family: 'Noto Sans KR', sans-serif; max-width: 720px; }
+
+.grid { display: grid; gap: 14px; }
+.grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 860px) {
+  .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; }
+  .header-controls { width: 100%; justify-content: flex-end; }
+}
+
+.card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 18px 20px; font-family: 'Noto Sans KR', sans-serif;
+}
+.card h3 { font-family: 'GmarketSans', 'Noto Sans KR', sans-serif; font-size: 15.5px; margin-bottom: 8px; letter-spacing: -0.2px; }
+.card p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.card ul { margin: 8px 0 0 18px; font-size: 12.8px; color: var(--text-muted); line-height: 1.75; }
+
+.hero-card {
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card2) 100%);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 26px 26px; display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; align-items: center;
+}
+@media (max-width: 860px) { .hero-card { grid-template-columns: 1fr; } }
+.hero-card h2 { font-size: 19px; margin-bottom: 10px; letter-spacing: -0.3px; }
+.hero-card p { font-size: 13.5px; color: var(--text-muted); font-family: 'Noto Sans KR', sans-serif; line-height: 1.7; }
+.hero-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.hero-stat { background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 14px; }
+.hero-stat .num { font-size: 22px; font-weight: 900; color: var(--smoker); font-family: 'GmarketSans', sans-serif; }
+.hero-stat .lbl { font-size: 10.5px; color: var(--text-muted); letter-spacing: 0.5px; margin-top: 2px; font-family: 'Noto Sans KR', sans-serif; }
+
+.pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.pill { font-size: 11.5px; font-family: 'Noto Sans KR', sans-serif; font-weight: 700; padding: 5px 12px; border-radius: 999px; background: var(--bg-card2); border: 1px solid var(--border); color: var(--text-muted); }
+
+table.colspec { width: 100%; border-collapse: collapse; font-family: 'Noto Sans KR', sans-serif; font-size: 12.8px; }
+table.colspec th, table.colspec td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); }
+table.colspec th { color: var(--text-muted); font-weight: 700; font-size: 11px; letter-spacing: 0.5px; }
+table.colspec td.k { color: var(--highbmi); font-weight: 700; white-space: nowrap; }
+
+/* ---------- 가설 카드 ---------- */
+.hyp-card { border-left: 3px solid var(--smoker); }
+.hyp-card .hyp-num { font-size: 11px; color: var(--smoker); font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; font-family: 'Noto Sans KR', sans-serif;}
+.hyp-card ul li { list-style: none; padding-left: 14px; position: relative; }
+.hyp-card ul li::before { content: '—'; position: absolute; left: 0; color: var(--text-muted); }
+
+/* ---------- stat-bar-mini (상관계수 / 지표 비교) ---------- */
+.stat-bar-mini { display: flex; align-items: center; gap: 10px; padding: 7px 4px; border-radius: 8px; font-family: 'Noto Sans KR', sans-serif; }
+.stat-bar-mini:hover { background: var(--bg-card2); }
+.stat-bar-mini-label { width: 150px; flex-shrink: 0; font-size: 12.5px; font-weight: 700; color: var(--text-muted); }
+.stat-bar-mini-track { flex: 1; height: 10px; background: var(--bg-dark); border-radius: 6px; overflow: hidden; position: relative; border: 1px solid var(--border); }
+.stat-bar-mini-fill { height: 100%; border-radius: 6px; }
+.stat-bar-mini-val { width: 56px; text-align: right; font-size: 12.5px; font-weight: 900; color: var(--text); flex-shrink: 0; }
+
+.compare-block { margin-bottom: 18px; }
+.compare-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; font-family: 'Noto Sans KR', sans-serif; }
+.compare-legend { display: flex; gap: 14px; margin-bottom: 10px; font-size: 11px; color: var(--text-muted); font-family: 'Noto Sans KR', sans-serif; }
+.compare-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+/* ---------- 차트 카드 ---------- */
+.chart-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; }
+.chart-card h3 { font-size: 14.5px; margin-bottom: 2px; font-family: 'Noto Sans KR', sans-serif; }
+.chart-card .chart-note { font-size: 11.5px; color: var(--text-muted); margin-bottom: 12px; font-family: 'Noto Sans KR', sans-serif; }
+.chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 860px) { .chart-row { grid-template-columns: 1fr; } }
+
+/* ---------- 결론 카드 ---------- */
+.concl-card { position: relative; overflow: hidden; }
+.concl-card .concl-num {
+  position: absolute; top: -6px; right: 8px; font-size: 52px; font-weight: 900; color: var(--bg-card2);
+  font-family: 'GmarketSans', sans-serif; z-index: 0; user-select: none;
+}
+.concl-card > * { position: relative; z-index: 1; }
+
+.target-card {
+  background: linear-gradient(135deg, rgba(166,58,80,0.14), rgba(198,93,110,0.06));
+  border: 1px solid var(--smoker); border-radius: var(--radius-lg); padding: 22px;
+}
+.target-card h3 { font-size: 16px; margin-bottom: 10px; }
+
+/* ---------- 한계 카드 ---------- */
+.limit-card { border-left: 3px solid var(--nonsmoker); }
+
+footer {
+  max-width: 1180px; margin: 0 auto; padding: 24px 20px 50px; font-family: 'Noto Sans KR', sans-serif;
+  font-size: 11.5px; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 30px;
+}
+footer a { color: var(--highbmi); text-decoration: none; }
+footer .foot-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-nav">본문으로 바로 가기</a>
+<div id="a11yLive" aria-live="polite" aria-atomic="true" role="status" class="visually-hidden"></div>
+
+<header class="header" role="banner">
+  <div class="header-line" aria-hidden="true"></div>
+  <div class="header-inner">
+    <div>
+      <div class="title-eyebrow">DATA ANALYSIS DASHBOARD</div>
+      <div class="title-main">생체 신호 기반 흡연 여부 비교 시각화</div>
+      <div class="title-sub"></div>
+    </div>
+    <div class="header-controls">
+      <button class="mode-toggle-btn" id="modeToggleBtn" aria-label="다크/라이트 테마 전환">🌙 다크</button>
+    </div>
+  </div>
+  <div class="badge-row" role="status" aria-label="데이터셋 요약">
+    <span class="badge">원본 38,984건</span>
+    <span class="badge">분석 표본 33,256건</span>
+    <span class="badge">흡연자 비율 36.7%</span>
+    <span class="badge alt">가설 3개 · 세부가설 8개</span>
+    <span class="badge alt">Kaggle Smoker Status Prediction</span>
+  </div>
+</header>
+
+<nav class="tabs-nav" role="tablist" aria-label="대시보드 탭">
+  <button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true" aria-controls="tab-overview" id="tabnav-overview"><span class="tab-kbd">1</span>개요</button>
+  <button class="tab-btn" data-tab="hypothesis" role="tab" aria-selected="false" aria-controls="tab-hypothesis" id="tabnav-hypothesis"><span class="tab-kbd">2</span>가설 · 방법</button>
+  <button class="tab-btn" data-tab="result" role="tab" aria-selected="false" aria-controls="tab-result" id="tabnav-result"><span class="tab-kbd">3</span>분석 결과</button>
+  <button class="tab-btn" data-tab="conclusion" role="tab" aria-selected="false" aria-controls="tab-conclusion" id="tabnav-conclusion"><span class="tab-kbd">4</span>결론 · 제안</button>
+  <button class="tab-btn" data-tab="limit" role="tab" aria-selected="false" aria-controls="tab-limit" id="tabnav-limit"><span class="tab-kbd">5</span>한계 · 참고</button>
+</nav>
+
+<main id="main-content">
+
+<!-- ===================== TAB 1: 개요 ===================== -->
+<section class="tab-panel active" id="tab-overview" role="tabpanel" aria-labelledby="tabnav-overview">
+  <div class="hero-card">
+    <div>
+      <h2>흡연은 정말 생체 신호에 유의미한 흔적을 남기는가?</h2>
+      <p>'흡연은 건강에 안 좋다'는 상식을 건강검진 생체 신호 데이터로 직접 검증했습니다. 혈압·혈당·콜레스테롤·간 수치 등 12개 이상의 지표를 흡연 여부로 비교하고, 성별·연령대·BMI 구간별로 그 차이가 더 크게 나타나는 집단을 탐색적으로 분석했습니다.</p>
+      <div class="pill-row">
+        <span class="pill">EDA</span><span class="pill">상관관계 분석</span><span class="pill">OLS 상호작용 회귀</span><span class="pill">Mann-Whitney U 검정</span><span class="pill">Z-score 위험지수</span>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">+1.31</div><div class="lbl">헤모글로빈 차이 (g/dL)</div></div>
+      <div class="hero-stat"><div class="num">+23.0</div><div class="lbl">γ-GTP 차이 (U/L)</div></div>
+      <div class="hero-stat"><div class="num">−5.5</div><div class="lbl">HDL 차이</div></div>
+      <div class="hero-stat"><div class="num">×1.79</div><div class="lbl">40대 고혈압 위험비</div></div>
+    </div>
+  </div>
+
+  <div class="section-title">핵심 질문</div>
+  <div class="grid cols-2">
+    <div class="card">
+      <h3>Q1. 건강 지표는 흡연 여부에 따라 유의미하게 다른가?</h3>
+      <p>혈압, 콜레스테롤, BMI 등 건강 지표들이 흡연자와 비흡연자 사이에서 통계적으로 유의미한 차이를 보이는지 확인합니다.</p>
+    </div>
+    <div class="card">
+      <h3>Q2. 그 차이는 어떤 집단에서 더 뚜렷한가?</h3>
+      <p>성별·연령대·BMI 구간 등 세부 집단으로 나누었을 때 흡연 여부에 따른 차이가 더 크게 나타나는 패턴을 시각화로 발견합니다.</p>
+    </div>
+  </div>
+
+  <div class="section-title">데이터셋</div>
+  <p class="section-desc">Kaggle 공개 데이터셋(Smoker Status Prediction) 기반 건강검진 생체 신호 데이터, 38,984행 × 23열. 극단값(Gtp≥500, ALT≥500, AST≥500, LDL≥400 등) 제거 후 33,256행을 분석에 사용했습니다.</p>
+  <table class="colspec">
+    <thead><tr><th style="width:130px">구분</th><th>컬럼</th></tr></thead>
+    <tbody>
+      <tr><td class="k">신체 정보</td><td>age, height(cm), weight(kg), waist(cm)</td></tr>
+      <tr><td class="k">혈압</td><td>systolic(수축기), relaxation(이완기)</td></tr>
+      <tr><td class="k">혈액</td><td>fasting blood sugar, Cholesterol, triglyceride, HDL, LDL, hemoglobin</td></tr>
+      <tr><td class="k">간 기능</td><td>AST, ALT, Gtp(γ-GTP)</td></tr>
+      <tr><td class="k">신장</td><td>serum creatinine</td></tr>
+      <tr><td class="k">타겟</td><td>smoking (1=흡연자, 0=비흡연자)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ===================== TAB 2: 가설 · 방법 ===================== -->
+<section class="tab-panel" id="tab-hypothesis" role="tabpanel" aria-labelledby="tabnav-hypothesis" hidden>
+  <div class="section-title">분석 목표</div>
+  <p class="section-desc">일반적인 의학 상식인 '흡연은 건강에 안 좋은 영향을 미칠 것이다'를 대전제로, 이를 구체적인 데이터로 입증하기 위한 가설을 설정하고 검증하는 것을 목표로 합니다.</p>
+
+  <div class="grid cols-3">
+    <div class="card hyp-card">
+      <div class="hyp-num">가설 1</div>
+      <h3>흡연은 혈관 관련 건강지표를 악화시킬 것이다</h3>
+      <ul>
+        <li>1-1. 모든 BMI 집단에서 헤모글로빈 수치를 증가시킬 것이다</li>
+        <li>1-2. 혈압에 악영향을 줄 것이다</li>
+        <li>1-3. HDL에 악영향을 줄 것이다</li>
+      </ul>
+    </div>
+    <div class="card hyp-card">
+      <div class="hyp-num">가설 2</div>
+      <h3>흡연은 간 기능 저하를 유발할 것이다</h3>
+      <ul>
+        <li>2-1. γ-GTP에 악영향을 줄 것이다</li>
+        <li>2-2. ALT에 악영향을 줄 것이다</li>
+        <li>2-3. AST에 악영향을 줄 것이다</li>
+      </ul>
+    </div>
+    <div class="card hyp-card">
+      <div class="hyp-num">가설 3</div>
+      <h3>고BMI 집단의 흡연이 건강에 더 악영향을 줄 것이다</h3>
+      <ul>
+        <li>3-1. 고BMI 집단의 흡연이 간수치에 더 악영향을 줄 것이다</li>
+        <li>3-2. 고BMI 집단의 흡연이 내장지방(허리둘레)에 더 악영향을 줄 것이다</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-title">전처리</div>
+  <div class="card">
+    <ul style="margin-top:0">
+      <li>임계값 기반 극단값 제거: Gtp&lt;500, ALT&lt;500, AST&lt;500, LDL&lt;400, serum creatinine&lt;3.0, eyesight(left/right)≤3.0</li>
+      <li>파생 변수 생성: BMI(체중/신장²), high_BMI(BMI≥25), age_group(연령대), htn(고혈압: 수축기≥140 또는 이완기≥90)</li>
+      <li>의료 데이터 특성상 실제 고위험군을 과도하게 제거하지 않기 위해 일반적인 건강검진 범위를 크게 벗어난 값만 제거</li>
+    </ul>
+  </div>
+
+  <div class="section-title">통계 기법</div>
+  <div class="grid cols-4">
+    <div class="card"><h3>Point-biserial</h3><p>흡연 여부(이진)와 연속형 건강 지표 간 상관관계</p></div>
+    <div class="card"><h3>OLS 상호작용 회귀</h3><p>지표 ~ smoking × high_BMI, HC3 강건 표준오차</p></div>
+    <div class="card"><h3>Mann-Whitney U</h3><p>연령대별 흡연/비흡연 그룹 간 혈압 분포 비교</p></div>
+    <div class="card"><h3>Z-score 위험지수</h3><p>ALT·GTP·허리둘레·HDL(역방향) 표준화 통합 지수</p></div>
+  </div>
+</section>
+
+<!-- ===================== TAB 3: 분석 결과 ===================== -->
+<section class="tab-panel" id="tab-result" role="tabpanel" aria-labelledby="tabnav-result" hidden>
+
+  <div class="section-title">흡연과 건강지표 간 상관관계</div>
+  <p class="section-desc">|r|≥0.2 의미 있는 변수, |r|≥0.3 핵심 변수. 표본이 커서 작은 상관계수도 통계적으로 유의할 가능성이 높습니다.</p>
+  <div class="chart-card" id="corrChartCard"></div>
+
+  <div class="section-title">흡연자 vs 비흡연자 핵심 지표</div>
+  <div class="chart-card">
+    <div class="compare-legend">
+      <span><i class="dot" style="background:var(--nonsmoker)"></i>비흡연자</span>
+      <span><i class="dot" style="background:var(--smoker)"></i>흡연자</span>
+    </div>
+    <div id="compareChart"></div>
+  </div>
+
+  <div class="section-title">간 건강 프로필 &amp; 연령·BMI 상호작용</div>
+  <div class="chart-row">
+    <div class="chart-card">
+      <h3>간 건강 프로필 (ALT · AST · γ-GTP)</h3>
+      <div class="chart-note">흡연자는 세 지표 모두에서 비흡연자보다 넓은 영역을 형성합니다.</div>
+      <svg id="radarChart" viewBox="0 0 300 260" role="img" aria-label="흡연자와 비흡연자의 ALT, AST, GTP 레이더 차트"></svg>
+    </div>
+    <div class="chart-card">
+      <h3>연령대별 혈압 차이 (흡연−비흡연, mmHg)</h3>
+      <div class="chart-note">40·50대에서 흡연자의 혈압이 뚜렷하게 높고, 60대 이후 역전됩니다.</div>
+      <svg id="bpLineChart" viewBox="0 0 300 200" role="img" aria-label="연령대별 흡연-비흡연 혈압 차이 라인 차트"></svg>
+    </div>
+  </div>
+
+  <div class="chart-card" style="margin-top:16px">
+    <h3>BMI 구간별 γ-GTP 평균 (흡연 vs 비흡연)</h3>
+    <div class="chart-note">BMI가 높을수록, 그리고 흡연 시 간 수치 악화가 증폭됩니다 — 고도비만 구간에서 차이 28.7 U/L(약 62%)로 최대.</div>
+    <svg id="bmiLineChart" viewBox="0 0 620 200" role="img" aria-label="BMI 구간별 흡연-비흡연 감마지티피 라인 차트"></svg>
+  </div>
+</section>
+
+<!-- ===================== TAB 4: 결론 · 제안 ===================== -->
+<section class="tab-panel" id="tab-conclusion" role="tabpanel" aria-labelledby="tabnav-conclusion" hidden>
+  <div class="section-title">데이터 분석 최종 결론</div>
+  <div class="grid cols-2">
+    <div class="card concl-card"><span class="concl-num">01</span>
+      <h3>혈관 건강에 대한 영향</h3>
+      <p>흡연자는 비흡연자에 비해 헤모글로빈 증가, HDL 감소, 혈압 상승 경향을 보이며, 혈관 건강 악화 및 심혈관 질환 위험 증가와 관련된 패턴임을 확인했습니다.</p>
+    </div>
+    <div class="card concl-card"><span class="concl-num">02</span>
+      <h3>간 기능에 대한 영향</h3>
+      <p>흡연자는 GTP, ALT, AST와 같은 간 기능 지표가 전반적으로 높게 나타나, 흡연이 간 기능 저하와 연관될 가능성이 있음을 확인했습니다.</p>
+    </div>
+    <div class="card concl-card"><span class="concl-num">03</span>
+      <h3>고BMI × 흡연 복합효과 (간 기능)</h3>
+      <p>고BMI와 흡연이 동시에 존재할 경우 GTP·ALT·AST 수치가 더욱 높게 나타나, 간 기능 저하가 단일 요인보다 복합적으로 더 크게 나타납니다.</p>
+    </div>
+    <div class="card concl-card"><span class="concl-num">04</span>
+      <h3>고BMI × 흡연 복합효과 (대사·지방 축적)</h3>
+      <p>고BMI 집단에서 흡연이 결합되면 허리둘레·중성지방이 증가하는 경향이 나타나, 내장지방 축적 및 대사 건강 악화 위험이 더욱 커집니다.</p>
+    </div>
+  </div>
+
+  <div class="section-title">데이터 기반 금연 권장 방법</div>
+  <div class="target-card">
+    <h3>🎯 타겟층: 고BMI 흡연자 집단</h3>
+    <div class="grid cols-2" style="margin-top:12px">
+      <ul style="margin-left:18px; font-size:13px; color:var(--text-muted); line-height:1.9">
+        <li>간 기능 추적검사(ALT, GTP) 정기 국가 검진 지원</li>
+        <li>허리둘레·BMI 관리 프로그램 지원</li>
+      </ul>
+      <ul style="margin-left:18px; font-size:13px; color:var(--text-muted); line-height:1.9">
+        <li>금연 상담 + 생활습관 코칭 통합 제공</li>
+        <li>40~50대 우선 홍보 — 혈압 지표에서도 두드러진 집단</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TAB 5: 한계 · 참고 ===================== -->
+<section class="tab-panel" id="tab-limit" role="tabpanel" aria-labelledby="tabnav-limit" hidden>
+  <div class="section-title">분석의 한계</div>
+  <div class="grid cols-2">
+    <div class="card limit-card"><h3>01 성별 변수 부재</h3><p>데이터에 성별 정보가 없어 헤모글로빈·HDL·허리둘레·BMI 등 성별 영향이 큰 지표의 해석에 한계가 있습니다. 일반적으로 흡연율은 남성이 더 높은 경향이 있습니다.</p></div>
+    <div class="card limit-card"><h3>02 생활습관 변수 미포함</h3><p>간 기능(음주), 심혈관(나트륨·칼륨·운동)에 큰 영향을 미치는 변수가 데이터에 없어 흡연의 순수 효과와 분리하기 어렵습니다.</p></div>
+    <div class="card limit-card"><h3>03 상관관계 ≠ 인과관계</h3><p>흡연이 직접적인 원인이라고 단정할 수 없습니다. '흡연자+운동부족', '흡연자+음주증가' 같은 결합 요인의 영향일 가능성이 있습니다.</p></div>
+    <div class="card limit-card"><h3>04 단면(cross-sectional) 데이터</h3><p>특정 시점의 건강 상태만 측정되어 흡연 기간·흡연량·과거 건강 상태가 반영되지 않고, 시간에 따른 변화를 추적할 수 없습니다.</p></div>
+  </div>
+
+  <div class="section-title">참고 문헌</div>
+  <div class="card">
+    <ul style="margin-top:0">
+      <li>Kaggle — Smoker Status Prediction Dataset</li>
+      <li>삼성서울병원 질환백과 — 고혈압</li>
+      <li>국가건강정보포털 · 질병관리청 — 이달의 건강정보</li>
+      <li>국민건강보험공단 / CJ올리브네트웍스 Smoke-Free 금연 캠페인</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div>생체 신호 기반 흡연 여부 비교 시각화 프로젝트</div>
+  <div class="foot-row">
+    <span>데이터 출처: Kaggle Smoker Status Prediction Dataset</span>
+    <span>분석 표본 33,256건 (원본 38,984건 중 극단값 제거)</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var COLOR_SMOKER = getCssVar('--smoker');
+  var COLOR_NONSMOKER = getCssVar('--nonsmoker');
+  var COLOR_HIGHBMI = getCssVar('--highbmi');
+  var COLOR_GRID = 'rgba(217,217,217,0.18)';
+  var COLOR_TEXT_MUTED = getCssVar('--text-muted');
+
+  function getCssVar(name){
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#A63A50';
+  }
+
+  /* ---------- 탭 전환 ---------- */
+  var tabBtns = Array.prototype.slice.call(document.querySelectorAll('.tab-btn'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('.tab-panel'));
+  var liveRegion = document.getElementById('a11yLive');
+
+  function activateTab(name){
+    tabBtns.forEach(function(btn){
+      var isActive = btn.dataset.tab === name;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+    panels.forEach(function(p){
+      var isActive = p.id === 'tab-' + name;
+      p.classList.toggle('active', isActive);
+      if (isActive) { p.removeAttribute('hidden'); } else { p.setAttribute('hidden', ''); }
+    });
+    var activeBtn = tabBtns.filter(function(b){ return b.dataset.tab === name; })[0];
+    if (activeBtn && liveRegion) { liveRegion.textContent = activeBtn.textContent.trim() + ' 탭으로 이동'; }
+  }
+
+  tabBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){ activateTab(btn.dataset.tab); });
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    var map = {'1':'overview','2':'hypothesis','3':'result','4':'conclusion','5':'limit'};
+    if (map[e.key]) { activateTab(map[e.key]); }
+  });
+
+  /* ---------- 테마 토글 ---------- */
+  var modeBtn = document.getElementById('modeToggleBtn');
+  modeBtn.addEventListener('click', function(){
+    var isLight = document.body.classList.toggle('light-mode');
+    modeBtn.textContent = isLight ? '☀️ 라이트' : '🌙 다크';
+    renderAllCharts();
+  });
+
+  /* ---------- 데이터 ---------- */
+  var CORR = [
+    {k:'hemoglobin', v:0.402}, {k:'γ-Gtp', v:0.268}, {k:'triglyceride', v:0.251},
+    {k:'serum creatinine', v:0.247}, {k:'waist(cm)', v:0.225}, {k:'ALT', v:0.149},
+    {k:'BMI', v:0.136}, {k:'relaxation', v:0.113}, {k:'systolic', v:0.097}, {k:'AST', v:0.086},
+    {k:'Cholesterol', v:-0.023}, {k:'LDL', v:-0.038}, {k:'age', v:-0.168}, {k:'HDL', v:-0.184}
+  ];
+
+  var COMPARE = [
+    {label:'헤모글로빈 (g/dL)', ns:14.14, sm:15.45, max:18},
+    {label:'HDL', ns:59.3, sm:53.8, max:65},
+    {label:'AST (U/L)', ns:25.0, sm:27.4, max:40},
+    {label:'ALT (U/L)', ns:24.4, sm:30.7, max:40},
+    {label:'γ-GTP (U/L)', ns:30.3, sm:53.3, max:60}
+  ];
+
+  var RADAR_LABELS = ['ALT', 'AST', 'γ-GTP'];
+  var RADAR_NS = [24.4, 25.0, 30.3];
+  var RADAR_SM = [30.7, 27.4, 53.3];
+  var RADAR_MAX = 60;
+
+  var BP_AGE_LABELS = ['20대','30대','40대','50대','60대','70대+'];
+  var BP_SYS_DIFF = [-0.09, 0.36, 5.20, 2.31, -0.50, -1.90];
+
+  var BMI_LABELS = ['저체중','정상','과체중','비만2단계','고도비만'];
+  var GTP_NS = [20.1, 23.7, 31.0, 38.2, 46.9];
+  var GTP_SM = [45.6, 45.0, 50.8, 58.8, 75.6];
+
+  /* ---------- 상관계수 바 차트 ---------- */
+  function renderCorrChart(){
+    var el = document.getElementById('corrChartCard');
+    var sorted = CORR.slice().sort(function(a,b){ return b.v - a.v; });
+    var maxAbs = Math.max.apply(null, sorted.map(function(d){ return Math.abs(d.v); }));
+    var html = '';
+    sorted.forEach(function(d){
+      var pct = Math.abs(d.v) / maxAbs * 100;
+      var color = d.v >= 0 ? COLOR_SMOKER : COLOR_NONSMOKER;
+      html += '<div class="stat-bar-mini">' +
+        '<div class="stat-bar-mini-label">' + d.k + '</div>' +
+        '<div class="stat-bar-mini-track"><div class="stat-bar-mini-fill" style="width:' + pct + '%; background:' + color + '"></div></div>' +
+        '<div class="stat-bar-mini-val">' + (d.v >= 0 ? '+' : '') + d.v.toFixed(3) + '</div>' +
+        '</div>';
+    });
+    el.innerHTML = html;
+  }
+
+  /* ---------- 흡연/비흡연 비교 바 ---------- */
+  function renderCompareChart(){
+    var el = document.getElementById('compareChart');
+    var html = '';
+    COMPARE.forEach(function(d){
+      var pctNs = d.ns / d.max * 100;
+      var pctSm = d.sm / d.max * 100;
+      html += '<div class="compare-block">' +
+        '<div class="compare-title">' + d.label + '</div>' +
+        '<div class="stat-bar-mini"><div class="stat-bar-mini-label">비흡연자</div>' +
+          '<div class="stat-bar-mini-track"><div class="stat-bar-mini-fill" style="width:' + pctNs + '%; background:' + COLOR_NONSMOKER + '"></div></div>' +
+          '<div class="stat-bar-mini-val">' + d.ns.toFixed(1) + '</div></div>' +
+        '<div class="stat-bar-mini"><div class="stat-bar-mini-label">흡연자</div>' +
+          '<div class="stat-bar-mini-track"><div class="stat-bar-mini-fill" style="width:' + pctSm + '%; background:' + COLOR_SMOKER + '"></div></div>' +
+          '<div class="stat-bar-mini-val">' + d.sm.toFixed(1) + '</div></div>' +
+        '</div>';
+    });
+    el.innerHTML = html;
+  }
+
+  /* ---------- 레이더 차트 (SVG) ---------- */
+  function renderRadar(){
+    var svg = document.getElementById('radarChart');
+    var cx = 150, cy = 130, R = 88;
+    var n = RADAR_LABELS.length;
+    var rings = [0.25, 0.5, 0.75, 1];
+    var parts = [];
+
+    function pt(i, frac){
+      var angle = -Math.PI/2 + i * (2*Math.PI/n);
+      return [cx + R*frac*Math.cos(angle), cy + R*frac*Math.sin(angle)];
+    }
+    function poly(frac){
+      var pts = [];
+      for (var i=0;i<n;i++){ pts.push(pt(i, frac).join(',')); }
+      return pts.join(' ');
+    }
+
+    rings.forEach(function(f){
+      parts.push('<polygon points="'+poly(f)+'" fill="none" stroke="'+COLOR_GRID+'" stroke-width="1"/>');
+    });
+    for (var i=0;i<n;i++){
+      var p = pt(i,1);
+      parts.push('<line x1="'+cx+'" y1="'+cy+'" x2="'+p[0]+'" y2="'+p[1]+'" stroke="'+COLOR_GRID+'" stroke-width="1"/>');
+      var lp = pt(i,1.22);
+      parts.push('<text x="'+lp[0]+'" y="'+lp[1]+'" fill="'+COLOR_TEXT_MUTED+'" font-size="12" font-family="Noto Sans KR, sans-serif" text-anchor="middle" dominant-baseline="middle">'+RADAR_LABELS[i]+'</text>');
+    }
+
+    function dataPoly(vals, color, opacity){
+      var pts = [];
+      for (var i=0;i<n;i++){ pts.push(pt(i, Math.min(vals[i]/RADAR_MAX,1)).join(',')); }
+      return '<polygon points="'+pts.join(' ')+'" fill="'+color+'" fill-opacity="'+opacity+'" stroke="'+color+'" stroke-width="2"/>';
+    }
+    parts.push(dataPoly(RADAR_NS, COLOR_NONSMOKER, 0.28));
+    parts.push(dataPoly(RADAR_SM, COLOR_SMOKER, 0.32));
+
+    // 범례
+    parts.push('<circle cx="14" cy="248" r="5" fill="'+COLOR_NONSMOKER+'"/><text x="24" y="252" font-size="11" fill="'+COLOR_TEXT_MUTED+'" font-family="Noto Sans KR, sans-serif">비흡연자</text>');
+    parts.push('<circle cx="94" cy="248" r="5" fill="'+COLOR_SMOKER+'"/><text x="104" y="252" font-size="11" fill="'+COLOR_TEXT_MUTED+'" font-family="Noto Sans KR, sans-serif">흡연자</text>');
+
+    svg.innerHTML = parts.join('');
+  }
+
+  /* ---------- 연령대별 혈압차이 라인차트 ---------- */
+  function renderBpLine(){
+    var svg = document.getElementById('bpLineChart');
+    var W=300, H=200, padL=30, padR=14, padT=14, padB=28;
+    var innerW = W-padL-padR, innerH = H-padT-padB;
+    var vals = BP_SYS_DIFF;
+    var maxV = Math.max.apply(null, vals.concat([0]));
+    var minV = Math.min.apply(null, vals.concat([0]));
+    var range = (maxV-minV) || 1;
+    var n = vals.length;
+    var parts = [];
+    var zeroY = padT + innerH - ((0-minV)/range)*innerH;
+
+    parts.push('<line x1="'+padL+'" y1="'+zeroY+'" x2="'+(W-padR)+'" y2="'+zeroY+'" stroke="'+COLOR_GRID+'" stroke-width="1"/>');
+
+    var pts = [];
+    for (var i=0;i<n;i++){
+      var x = padL + (i/(n-1))*innerW;
+      var y = padT + innerH - ((vals[i]-minV)/range)*innerH;
+      pts.push([x,y]);
+      parts.push('<text x="'+x+'" y="'+(H-8)+'" font-size="9.5" fill="'+COLOR_TEXT_MUTED+'" text-anchor="middle" font-family="Noto Sans KR, sans-serif">'+BP_AGE_LABELS[i]+'</text>');
+    }
+    var linePts = pts.map(function(p){ return p[0]+','+p[1]; }).join(' ');
+    parts.push('<polyline points="'+linePts+'" fill="none" stroke="'+COLOR_SMOKER+'" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>');
+    pts.forEach(function(p,i){
+      parts.push('<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.5" fill="'+COLOR_SMOKER+'"/>');
+      parts.push('<text x="'+p[0]+'" y="'+(p[1]-9)+'" font-size="9.5" fill="'+COLOR_TEXT_MUTED+'" text-anchor="middle" font-family="Noto Sans KR, sans-serif">'+vals[i].toFixed(1)+'</text>');
+    });
+    svg.innerHTML = parts.join('');
+  }
+
+  /* ---------- BMI별 GTP 라인차트 (2계열) ---------- */
+  function renderBmiLine(){
+    var svg = document.getElementById('bmiLineChart');
+    var W=620, H=200, padL=36, padR=20, padT=16, padB=30;
+    var innerW = W-padL-padR, innerH = H-padT-padB;
+    var n = BMI_LABELS.length;
+    var maxV = Math.max.apply(null, GTP_SM.concat(GTP_NS)) * 1.1;
+    var parts = [];
+
+    [0,0.25,0.5,0.75,1].forEach(function(f){
+      var y = padT + innerH - f*innerH;
+      parts.push('<line x1="'+padL+'" y1="'+y+'" x2="'+(W-padR)+'" y2="'+y+'" stroke="'+COLOR_GRID+'" stroke-width="1"/>');
+      parts.push('<text x="'+(padL-8)+'" y="'+(y+3)+'" font-size="9.5" fill="'+COLOR_TEXT_MUTED+'" text-anchor="end" font-family="Noto Sans KR, sans-serif">'+Math.round(f*maxV)+'</text>');
+    });
+
+    function linePts(vals){
+      var pts=[];
+      for (var i=0;i<n;i++){
+        var x = padL + (i/(n-1))*innerW;
+        var y = padT + innerH - (vals[i]/maxV)*innerH;
+        pts.push([x,y]);
+      }
+      return pts;
+    }
+    function drawSeries(vals, color, dashed){
+      var pts = linePts(vals);
+      var linePtsStr = pts.map(function(p){ return p[0]+','+p[1]; }).join(' ');
+      parts.push('<polyline points="'+linePtsStr+'" fill="none" stroke="'+color+'" stroke-width="2.5" '+(dashed?'stroke-dasharray="5,4"':'')+' stroke-linejoin="round" stroke-linecap="round"/>');
+      pts.forEach(function(p,i){
+        parts.push('<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.5" fill="'+color+'"/>');
+      });
+      return pts;
+    }
+    var nsPts = drawSeries(GTP_NS, COLOR_NONSMOKER, true);
+    var smPts = drawSeries(GTP_SM, COLOR_SMOKER, false);
+
+    for (var i=0;i<n;i++){
+      var x = padL + (i/(n-1))*innerW;
+      parts.push('<text x="'+x+'" y="'+(H-8)+'" font-size="10" fill="'+COLOR_TEXT_MUTED+'" text-anchor="middle" font-family="Noto Sans KR, sans-serif">'+BMI_LABELS[i]+'</text>');
+    }
+    smPts.forEach(function(p,i){
+      parts.push('<text x="'+p[0]+'" y="'+(p[1]-10)+'" font-size="10" fill="'+COLOR_SMOKER+'" text-anchor="middle" font-weight="700" font-family="Noto Sans KR, sans-serif">'+GTP_SM[i].toFixed(1)+'</text>');
+    });
+
+    parts.push('<circle cx="'+(W-190)+'" cy="14" r="5" fill="'+COLOR_NONSMOKER+'"/><text x="'+(W-178)+'" y="18" font-size="11" fill="'+COLOR_TEXT_MUTED+'" font-family="Noto Sans KR, sans-serif">비흡연자</text>');
+    parts.push('<circle cx="'+(W-100)+'" cy="14" r="5" fill="'+COLOR_SMOKER+'"/><text x="'+(W-88)+'" y="18" font-size="11" fill="'+COLOR_TEXT_MUTED+'" font-family="Noto Sans KR, sans-serif">흡연자</text>');
+
+    svg.innerHTML = parts.join('');
+  }
+
+  function renderAllCharts(){
+    COLOR_SMOKER = getCssVar('--smoker');
+    COLOR_NONSMOKER = getCssVar('--nonsmoker');
+    COLOR_HIGHBMI = getCssVar('--highbmi');
+    COLOR_TEXT_MUTED = getCssVar('--text-muted');
+    renderCorrChart();
+    renderCompareChart();
+    renderRadar();
+    renderBpLine();
+    renderBmiLine();
+  }
+
+  document.addEventListener('DOMContentLoaded', renderAllCharts);
+  if (document.readyState !== 'loading') { renderAllCharts(); }
+})();
+</script>
+</body>
+</html>
