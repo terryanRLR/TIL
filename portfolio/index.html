@@ -307,9 +307,23 @@
     letter-spacing:.01em;color:var(--muted);font-weight:400}
   .morebtn:focus-visible{outline:2px solid var(--dom);outline-offset:2px}
   /* ── 03 Research · 04 Credentials ─────────────────────────────
-     부트캠프 4건과 같은 밀도로 6건을 늘어놓으면 초점이 무너진다.
-     대표 1건만 .case 로 깊게, 나머지는 카드 한 줄씩으로 눌러 담는다. */
+     처음엔 대표 1건만 .case 로 깊게 쓰고 나머지 5건은 카드 한 줄씩으로 눌러 담았다.
+     지금은 6건 전부 .case 다 — 접기/펼치기(.full)가 article.case 전체에 걸리므로
+     기본 화면 높이는 그대로이고, 깊이는 클릭한 사람에게만 열린다.
+     대신 목차(.index.six)를 앞에 둬서 "여섯 건이 무엇인가" 를 먼저 보이게 한다. */
+  .index.six{grid-template-columns:repeat(3,1fr)}
+  /* 근거 배지 — 이 카드의 수치가 어느 문서에서 나왔는지 제목 옆에서 밝힌다.
+     공인성적서 > 최종보고서 > 연차보고서 순. 극초음속 1건만 보안유지 협약으로
+     보고서를 반출할 수 없어, 점선(.plan)으로 "근거의 성격이 다르다" 를 표시한다.
+     성과를 낮춰 적는 표시가 아니다 — 달성은 했고 문서를 못 붙이는 것뿐이다. */
+  .evid{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.04em;
+    color:var(--muted);border:1px solid var(--border);
+    padding:3px 8px;border-radius:6px;white-space:nowrap}
+  .evid.plan{border-style:dashed;color:var(--amber);
+    border-color:color-mix(in srgb,var(--amber) 55%,var(--border))}
   .rgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:24px}
+  /* 연구 역량 요약 카드 하나만 남아 2열 격자에서 반쪽으로 뜨는 것을 막는다 */
+  .rgrid.one{grid-template-columns:1fr}
   .rcard{background:var(--surface);border:1px solid var(--border);
     border-left:3px solid var(--amber);border-radius:10px;padding:15px 17px}
   .rcard .k{font-family:'JetBrains Mono',monospace;font-size:.63rem;letter-spacing:.05em;
@@ -342,6 +356,7 @@
   @media (max-width:900px){
     .rgrid,.pubs{grid-template-columns:1fr}
     .creds{grid-template-columns:1fr;gap:20px}
+    .index.six{grid-template-columns:repeat(2,1fr)}
   }
 </style>
 </head>
@@ -858,12 +873,20 @@
 <section id="research">
   <div class="wrap">
     <div class="sec-head"><span class="eyebrow">03 — Research</span><h2>석사 연구 · 국책과제</h2></div>
-    <p class="sec-note">위 네 프로젝트의 <b>"숫자를 믿기 전에 측정법을 의심한다"</b>는 태도는 여기서 왔습니다. 인하대학교 대학원 화학전공(2023.03 ~ 2025.02)에서 <b>국책과제 6건</b>에 연구원으로 참여하며 소재 합성부터 분석 데이터 가공, 정량목표 달성 판정, 보고서 작성까지 담당했습니다. 아래 수치는 전부 <b>최종보고서·공인성적서 기준</b>입니다 — 같은 과제라도 발표자료 값과 갈릴 때는 성적서를 따랐습니다.</p>
+    <p class="sec-note">위 네 프로젝트의 <b>"숫자를 믿기 전에 측정법을 의심한다"</b>는 태도는 여기서 왔습니다. 인하대학교 대학원 화학전공(2023.03 ~ 2025.02)에서 <b>국책과제 6건</b>에 연구원으로 참여하며 소재 합성부터 분석 데이터 가공, 정량목표 달성 판정, 보고서 작성까지 담당했습니다. 아래 <b>6건 모두 담당 구간과 근거를 펼쳐서</b> 적었고, 카드마다 <b>어느 문서에서 나온 수치인지</b>를 제목 옆에 달아 두었습니다 — 공인성적서 · 최종보고서 · 연차보고서 순이고, <b>보안유지 협약으로 보고서를 붙일 수 없는 1건은 그 사실을 카드에 밝혀 두었습니다.</b></p>
 
+    <div class="index six">
+      <a class="idx" href="#r1" style="--dom:var(--amber)"><span class="k">산학협력 · 소재</span><h4>Polyol 정제용 친환경 탄산마그네슘</h4><p>국내 시험 불가 지표의 대체 검증법 설계</p><span class="kpi">794 → 19.3 ppm<small>KOH 제거율 98% · 특허 등록</small></span><span class="go">상세 보기 <span class="ar">↓</span></span></a>
+      <a class="idx" href="#r2" style="--dom:var(--amber)"><span class="k">나노융합 · TRL 9</span><h4>실내 유해인자 제거용 고성능 활성탄 필터</h4><p>담지량 상한 특정 · 양산 규격 판단 근거</p><span class="kpi">1,774 m²/g<small>목표 900 · 담당 지표 4종 전부 상회</small></span><span class="go">상세 보기 <span class="ar">↓</span></span></a>
+      <a class="idx" href="#r3" style="--dom:var(--amber)"><span class="k">한전 사외공모 · 촉매</span><h4>내연기관용 질소산화물 직접분해 촉매</h4><p>5종 분석 교차검증으로 목표달성도 입증</p><span class="kpi">분해율 84.4%<small>@300℃ · 3차년도 목표 70%</small></span><span class="go">상세 보기 <span class="ar">↓</span></span></a>
+      <a class="idx" href="#r4" style="--dom:var(--amber)"><span class="k">KEIT · 7기관 컨소시엄</span><h4>낮은 수분투과율 · Low Outgassing 접착소재</h4><p>기관 간 해석이 갈리지 않는 비교 기준 설계</p><span class="kpi">0.31 wt%<small>경화 전후 무게감소 · 담당 5건 100%</small></span><span class="go">상세 보기 <span class="ar">↓</span></span></a>
+      <a class="idx" href="#r5" style="--dom:var(--amber)"><span class="k">연구재단 · 수소저장</span><h4>미래유망수소기술인재양성연구단</h4><p>활성화 경로 3종 비교 · 금속 고분산 담지</p><span class="kpi">DOE 5.5 wt.% 상회<small>상온 · 대한화학회 133rd 발표</small></span><span class="go">상세 보기 <span class="ar">↓</span></span></a>
+      <a class="idx" href="#r6" style="--dom:var(--amber)"><span class="k">연구재단 · 초고내열</span><h4>극초음속 환경용 초고내열 탄소 복합소재</h4><p>스케일업 전환 구간의 분석 데이터 검증</p><span class="kpi">정량목표 5지표 달성<small>산화개시온도·산화율·기공율·파괴인성·CTE</small></span><span class="go">상세 보기 <span class="ar">↓</span></span></a>
+    </div>
     <article class="case" id="r1" style="--dom:var(--amber)">
       <div class="case-head">
         <div>
-          <div class="tagrow"><span class="tag">산학협력 · 소재</span><span class="status">2023.03 ~ 2024.04 · 중소기업기술혁신개발사업 · 과제번호 S3277666</span></div>
+          <div class="tagrow"><span class="tag">산학협력 · 소재</span><span class="evid">공인성적서</span><span class="status">2023.03 ~ 2024.04 · 중소기업기술혁신개발사업 · 과제번호 S3277666</span></div>
           <h3>Polyol 정제용 친환경 탄산마그네슘 개발</h3>
           <p class="role">제조 시료 다각도 심층 분석 · 정량 평가지표 검증 담당 — <b class="mine">국내 시험 불가 항목의 대체 검증법 설계</b> · 분석 평가서 · 보고서 · 최종 발표자료 작성 · 특허 공동 발명자</p>
         </div>
@@ -911,38 +934,271 @@
       </div>
     </article>
 
-    <p class="sec-note" style="margin:30px 0 0">나머지 5건 — 담당 구간과 <b>최종보고서 기준 대표 지표</b>만 남겼습니다.</p>
-    <div class="rgrid">
-      <div class="rcard">
-        <span class="k">한국연구재단 · 2023.03 ~ 2025.02</span>
-        <h4>극초음속 환경용(≥ 2,500℃) 초고내열 탄소 복합소재</h4>
-        <p>BDT 나노필러(W·Ti·TiC·Al₂O₃ 10 nm 이하, 전기폭발법)와 CVD BN 계면 코팅으로 C/C·CMC 를 제조하고, 설계인자를 분리한 다변수 배합 실험으로 랩스케일 제조조건을 도출. 스케일업 전환 구간에서 <b>측정 조건 불일치와 실제 물성 변화를 분리 판정</b>.</p>
-        <span class="fig">단계별 지표 — 산화개시온도 <b>≥ 900℃</b> · 기공율 <b>≤ 0.5%</b> · 계면 파괴인성 <b>≥ 7 MPa·m^1/2</b></span>
+    <article class="case" id="r2" style="--dom:var(--amber)">
+      <div class="case-head">
+        <div>
+          <div class="tagrow"><span class="tag">나노융합 · 사업화</span><span class="evid">최종보고서 · 공인성적서</span><span class="status">2023.01 ~ 2023.12 · 나노융합2020+(PLUS) · R202100500 · 종료시점 TRL 9</span></div>
+          <h3>실내 유해인자 제거용 고성능 활성탄 필터 사업화</h3>
+          <p class="role">질소·나노금속 담지 시료 제조와 기본 분석 담당 — <b class="mine">최적값이 아니라 담지량 상한을 특정</b> · 데이터 처리 평가서 발급 · 최종보고서·성과 발표자료의 제조·기본분석 파트 작성</p>
+        </div>
       </div>
-      <div class="rcard">
-        <span class="k">KEIT 산업기술혁신사업 · 2023.01 ~ 2024.12</span>
-        <h4>낮은 수분투과율 및 Low Outgassing 접착소재</h4>
-        <p>주관 1곳·참여 6곳 컨소시엄 과제. UV 경화형 저온·속경화 에폭시 조성물 선별과 경화조건 확립을 담당하고, 표면처리 3종(산·오존·상압 플라즈마)을 시간별로 나눠 계면 물성을 비교. 조성별 근거를 <b>워크숍 발표자료로 제공해 기관 간 재실험을 줄임</b>.</p>
-        <span class="fig">인하대 개발내용 <b>5건 전 항목 달성도 100%</b> · 경화 전후 무게감소 <b>0.31 wt%</b></span>
+
+      <div class="tech"><span class="own">N₂ 77K 흡탈착(BET · NLDFT)</span><span class="own">XPS</span><span class="own">TEM</span><span class="own">SEM</span><span class="own">질소 도핑(우레아 · 멜라민 · EDA)</span><span class="own">나노금속 담지(질산니켈)</span><span>공인시험기관 필터 성능평가</span></div>
+      <p class="techlegend"><b>●</b> 내가 직접 수행 · 표시 없는 항목은 외부 기관 의뢰</p>
+
+      <p class="summary">주관기업 <b>쓰리에이씨</b>와 인하대학교가 함께 수행한 <b>사업화 과제</b>입니다(종료시점 TRL 9 · 필터 양산시스템 구축과 상품 출시가 종료 조건). 나노다공성 활성탄만으로는 흡착량·선택성이 낮은데, 금속이나 작용기를 넣으면 <b>기공이 막혀(pore blocking) 오히려 효율이 떨어지는 상충</b>이 있었습니다. 논문이라면 가장 좋은 조건 하나를 찾으면 되지만 <b class="mine">양산이 목표인 과제에서는 "어디까지 넣어도 되는가"에 답해야 합니다.</b> 제 몫은 그 상한을 데이터로 특정하는 것이었습니다.</p>
+
+      <div class="metrics">
+        <div><div class="n">1,774 m²/g</div><div class="k">BET 비표면적 · 3차년도 목표 900 이상</div></div>
+        <div><div class="n">4/4</div><div class="k">담당 성능지표 전 항목 목표 상회</div></div>
+        <div><div class="n">23건 100%</div><div class="k">과제 추진 항목 달성도 · 상품 출시</div></div>
       </div>
-      <div class="rcard">
-        <span class="k">한국연구재단 기후기술인재양성 · 2023.01 ~ 2024.12</span>
-        <h4>미래유망수소기술인재양성연구단</h4>
-        <p>수소저장 소재 분야 연구원으로 흡착제 합성·활성화·표면처리와 흡착 데이터 분석을 담당. 과산화물 기반 친환경 활성화법을 개발하고, 금속미립자를 5 nm 이하로 고분산해 담지체 기공 파괴를 최소화. 온도별 흡착량·흡착속도와 기공크기의 상관관계를 데이터로 규명.</p>
-        <span class="fig">피라냐 용액 기반 팽창흑연이 상온에서 <b>DOE 목표 5.5 wt.%</b> 를 상회 — 대한화학회 133rd 발표</span>
+
+      <div class="charts">
+        <div class="chart"><h5>넣을수록 좋아지지 않는다 — 담지량과 비표면적의 상충</h5><p class="cap-txt">니켈 전구체를 늘릴수록 기공이 막힌다. 최적값 하나가 아니라 감소 폭을 재야 상한을 말할 수 있다</p><svg viewBox="0 0 520 254" role="img" aria-label="니켈 담지량에 따른 비표면적 변화 — 무담지 인하0 1797, 5wt% 인하1 1487, 7wt% 인하3 1246 제곱미터 매 그램으로 감소"><line x1="60" y1="196" x2="500" y2="196" stroke="var(--border)" stroke-width="1"/><text x="52" y="199.5" text-anchor="end" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9px">0</text><line x1="60" y1="158" x2="500" y2="158" stroke="var(--border)" stroke-width="1"/><text x="52" y="161.5" text-anchor="end" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9px">500</text><line x1="60" y1="120" x2="500" y2="120" stroke="var(--border)" stroke-width="1"/><text x="52" y="123.5" text-anchor="end" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9px">1000</text><line x1="60" y1="82" x2="500" y2="82" stroke="var(--border)" stroke-width="1"/><text x="52" y="85.5" text-anchor="end" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9px">1500</text><line x1="60" y1="44" x2="500" y2="44" stroke="var(--border)" stroke-width="1"/><text x="52" y="47.5" text-anchor="end" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9px">2000</text><rect x="101" y="59.4" width="78" height="136.6" rx="2" fill="var(--c2)"/><text x="140" y="52" text-anchor="middle" fill="var(--text)" style="font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:500">1,797</text><rect x="231" y="83.0" width="78" height="113.0" rx="2" fill="var(--c1)"/><text x="270" y="75.5" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:600">1,487</text><rect x="361" y="101.3" width="78" height="94.7" rx="2" fill="var(--muted)"/><text x="400" y="93.8" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:11.5px">1,246</text><path d="M140 59.4 L270 83.0 L400 101.3" fill="none" stroke="var(--c1)" stroke-width="1.3" stroke-dasharray="4 3"/><text x="205" y="114" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9.5px">−17%</text><text x="335" y="132" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9.5px">−31%</text><text x="140" y="214" text-anchor="middle" fill="var(--muted)" style="font-size:10px">인하0 · 무담지</text><text x="270" y="214" text-anchor="middle" fill="var(--text)" style="font-size:10px;font-weight:600">인하1 · Ni 5 wt%</text><text x="270" y="226" text-anchor="middle" fill="var(--c1)" style="font-size:9px">담지군 중 최고 기공특성</text><text x="400" y="214" text-anchor="middle" fill="var(--muted)" style="font-size:10px">인하3 · Ni 7 wt%</text><text x="60" y="26" fill="var(--muted)" style="font-size:9px">비표면적 S(BET) · m²/g · N₂ 77K 흡탈착</text><text x="60" y="246" fill="var(--muted)" style="font-size:9.5px">총기공부피도 같은 방향 — 3.77 → 2.82 → 1.30 cm³/g. 담지량 상한을 이 구간에서 특정했다</text></svg><div class="legend"><span><i style="background:var(--c2)"></i>무담지 기준</span><span><i style="background:var(--c1)"></i>담지군 최적</span><span><i style="background:var(--muted)"></i>과담지</span></div></div>
+
+        <div class="chart"><h5>담당 성능지표 4종 — 3차년도 목표 대비</h5><p class="cap-txt">단위가 서로 달라 목표를 1.0× 로 두고 그 배율로 나란히 놓았다. 금속 입자크기는 작을수록 좋아 역방향으로 환산</p><svg viewBox="0 0 520 254" role="img" aria-label="담당 성능지표 4종의 3차년도 목표 대비 달성 배율 — BET 1.97배, 금속 입자크기 1.43배, 금속 담지율 1.35배, 질소 담지율 1.13배"><text x="16" y="26" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.1em">ACHIEVED / TARGET</text><line x1="335" y1="40" x2="335" y2="210" stroke="var(--accent)" stroke-width="1.3" stroke-dasharray="5 3"/><text x="335" y="226" text-anchor="middle" fill="var(--accent)" style="font-family:'JetBrains Mono',monospace;font-size:9px">목표 = 1.0×</text><text x="500" y="226" text-anchor="end" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9px">2.0×</text><text x="16" y="56" fill="var(--text)" style="font-size:10.5px">BET 비표면적</text><rect x="170" y="60" width="325" height="17" rx="3" fill="var(--c1)"/><text x="176" y="72.5" fill="var(--bg)" style="font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600">1,774 m²/g</text><text x="500" y="56" text-anchor="end" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9px">목표 900 이상</text><text x="16" y="98" fill="var(--text)" style="font-size:10.5px">금속 입자크기</text><rect x="170" y="102" width="236" height="17" rx="3" fill="var(--c1)"/><text x="176" y="114.5" fill="var(--bg)" style="font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600">&lt; 3.5 nm</text><text x="500" y="98" text-anchor="end" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9px">목표 5 nm 이하</text><text x="16" y="140" fill="var(--text)" style="font-size:10.5px">금속 담지율</text><rect x="170" y="144" width="223" height="17" rx="3" fill="var(--c1)"/><text x="176" y="156.5" fill="var(--bg)" style="font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600">6.77%</text><text x="500" y="140" text-anchor="end" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9px">목표 5% 이상</text><text x="16" y="182" fill="var(--text)" style="font-size:10.5px">질소 담지율</text><rect x="170" y="186" width="186" height="17" rx="3" fill="var(--c1)"/><text x="176" y="198.5" fill="var(--bg)" style="font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600">5.67%</text><text x="500" y="182" text-anchor="end" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9px">목표 5% 이상</text><text x="16" y="246" fill="var(--muted)" style="font-size:9.5px">네 항목 모두 최종보고서 정량목표 표의 3차년도 목표를 상회 — 자체·전문가평가 기준</text></svg></div>
       </div>
-      <div class="rcard">
-        <span class="k">한국전력공사 사외공모 · 2023.02 ~ 2024.01</span>
-        <h4>내연기관용 질소산화물 직접분해 촉매 기술개발</h4>
-        <p>참여기간(3차년도)의 촉매 제조와 형상·구조·조성·기공 특성 분석 전 구간을 담당. 담지량을 늘리면 기공이 막히는 상충을 <b>5종 분석(TEM·XRD·SEM·XPS·BET)으로 교차 검증</b>해 조건을 특정하고, 최종평가 발표자료의 목표달성도 5개 장표를 작성.</p>
-        <span class="fig">비표면적 <b>1,206 m²/g</b>(목표 850) · 분해율 최대 <b>80%</b>(목표 65%) · 3차년도 <b>8건 전 항목 100%</b></span>
+
+      <div class="detail">
+        <dl>
+          <dt data-star="S">상황 — 논문이 아니라 상품이 종료 조건이었다</dt>
+          <dd>실내 공기의 라돈·세균·VOCs·악취물질을 잡는 기능성 활성탄 필터를 <b>제품으로 내는 것</b>이 과제의 목표였습니다. 주관기업이 필터를 양산하고 인하대학교가 소재를 맡는 구조였고, 저는 <b>질소 담지와 나노금속 담지 시료의 제조와 기본 분석</b>을 담당했습니다. 종료시점 TRL 9 — 실험실 결과가 아니라 <b>같은 조건으로 계속 만들 수 있는 소재</b>여야 했습니다.</dd>
+
+          <dt data-star="T">과제 — 성능을 올리는 방향과 구조를 지키는 방향이 반대였다</dt>
+          <dd>흡착량과 선택성을 올리려면 금속이나 작용기를 넣어야 하는데, 넣는 순간 <b>기공이 막혀 비표면적이 무너집니다.</b> 두 요구가 반대 방향이라 <b>"가장 좋은 조건"이 하나로 정해지지 않았습니다.</b></dd>
+          <dd>그래서 문제를 바꿔 잡았습니다 — 최적값을 찾는 대신 <b class="mine">"어디까지 넣으면 무엇을 잃는가"를 구간으로 재기로</b> 했습니다. 양산 규격을 정하는 쪽이 읽을 수 있는 형태는 점 하나가 아니라 범위이기 때문입니다.</dd>
+
+          <dt data-star="A">행동 ① 금속을 바로 넣지 않고, 앉을 자리를 먼저 만들었다</dt>
+          <dd>고체 질소 도핑제(<b>우레아 · 멜라민</b>)와 액상 도핑제(<b>EDA</b>)로 담지량을 비교해 도핑 경로를 골랐고, <b>질소를 먼저 도입해 표면 선택성을 높인 뒤 그 질소 자리에 금속을 선택적으로 담지</b>하는 경로를 채택했습니다. 금속을 무작정 늘리는 대신 <b>붙을 자리를 만들어 같은 담지량에서 더 나은 분산을 얻는</b> 방향입니다.</dd>
+
+          <dt data-star="A">행동 ② 상한이 보이도록 무게비별로 끊어서 쟀다</dt>
+          <dd>질산니켈 전구체로 무게비별 시료(<b>인하1 5 wt% · 인하3 7 wt%</b>)를 제조하고 <b>XPS</b>(담지 조성) · <b>TEM</b>(입자 크기) · <b>N₂ 77K 흡탈착</b>(비표면적·기공분포)으로 같은 항목을 반복 측정했습니다. 그 결과 담지량이 늘수록 비표면적이 <b>1,797 → 1,487 → 1,246 m²/g</b>(총기공부피 3.77 → 2.82 → 1.30 cm³/g)로 줄어드는 구간을 정량화해 <b class="mine">담지량 상한을 특정</b>했습니다.</dd>
+          <dd class="muted">흡착 성능이 금속 함량에 비례하지 않는다는 것도 같은 데이터에서 나왔습니다 — 비표면적이 가장 높은 무담지 시료가 포름알데히드 흡착량은 가장 낮았습니다. <b>한 지표만 보고 조건을 고르면 틀린다</b>는 근거로 보고서에 함께 실었습니다.</dd>
+
+          <dt data-star="R">결과</dt>
+          <dd>담당 성능지표 <b class="mine">4종 모두 3차년도 최종 목표를 상회</b>했습니다 — BET <b>1,774 m²/g</b>(목표 900) · 질소담지율 <b>5.67%</b>(목표 5) · 금속담지율 <b>6.77%</b>(목표 5) · 금속입자 <b>3.5 nm 미만</b>(목표 5 nm 이하). 데이터 처리 평가서를 발급하고 최종보고서·성과 발표자료의 제조·기본분석 파트를 작성해 목표 달성 근거를 제시했습니다.</dd>
+          <dd>과제 추진 항목 <b>23건 전 항목 달성도 100%</b>, <b>필터 양산시스템 구축과 상품 출시</b>로 이어졌습니다. 이 소재를 적용한 필터의 공인성적서 기준 성능은 <b>세균제거율 99.9%</b>(목표 99 이상) · <b>라돈제거율 55.9%</b>(목표 50 이상 · 초기농도 182.04 Bq/m³) · <b>메틸메르캅탄제거율 99.9%</b>(목표 90 이상)였습니다.</dd>
+          <dd class="muted">완제품 필터의 공인성적서 값은 <b>주관기업이 담당한 구간</b>의 결과입니다. 제가 만든 것은 그 필터에 들어간 소재와, 담지 조건을 정할 때 쓴 데이터입니다 — 구분해서 적습니다.</dd>
+
+          <dt>배운 점</dt>
+          <dd class="muted">여기서 <b>"최적값 하나보다 쓸 수 있는 범위가 더 유용하다"</b>는 것을 배웠습니다. FDS 프로젝트에서 임계값을 하나로 두지 않고 <b>review · confirm 이중 임계로 나눠 설계</b>한 것이 같은 판단입니다 — 운영하는 쪽이 필요한 것은 최적점이 아니라 <b>어디까지가 안전한 구간인가</b>였습니다.</dd>
+        </dl>
       </div>
-      <div class="rcard">
-        <span class="k">나노융합2020+(PLUS) · 2023.01 ~ 2023.12 · TRL 9</span>
-        <h4>실내 유해인자 제거용 고성능 활성탄 필터 사업화</h4>
-        <p>질소 담지 및 나노금속 담지 시료의 제조와 기본 분석을 담당. 논문이 아니라 <b>양산이 목표</b>인 과제라, 금속 함량이 늘수록 비표면적이 줄어드는 구간(1,797 → 1,487 → 1,246 m²/g)을 정량화해 <b>담지량 상한을 판단할 수 있는 형태</b>로 데이터를 정리.</p>
-        <span class="fig">담당 지표 4종 전부 상회 — BET <b>1,774 m²/g</b>(목표 900) · 금속입자 <b>&lt; 3.5 nm</b> · 추진 항목 <b>23건 100%</b></span>
+    </article>
+
+    <article class="case" id="r3" style="--dom:var(--amber)">
+      <div class="case-head">
+        <div>
+          <div class="tagrow"><span class="tag">한전 사외공모 · 촉매</span><span class="evid">최종·진도보고서</span><span class="status">2023.02 ~ 2024.01 · 한국전력공사 사외공모 기초연구 · 3차년도 참여</span></div>
+          <h3>내연기관용 질소산화물 직접분해 촉매 기술개발</h3>
+          <p class="role">3차년도 촉매 제조와 형상·구조·조성·기공 특성 분석 전 구간 담당 — <b class="mine">하나의 분석으로 답할 수 없는 질문을 5종으로 갈라 교차검증</b> · 최종평가 발표자료 목표달성도 5개 장표 작성 · SCI(E) 제2저자</p>
+        </div>
       </div>
+
+      <div class="tech"><span class="own">TEM</span><span class="own">XRD</span><span class="own">SEM</span><span class="own">XPS</span><span class="own">N₂ 77K 흡탈착(BET)</span><span class="own">KOH 활성화 · 금속 담지 · 환원</span><span>촉매 반응 성능 평가</span></div>
+      <p class="techlegend"><b>●</b> 내가 직접 수행 · 표시 없는 항목은 외부 기관 의뢰</p>
+
+      <p class="summary">디젤 발전기 배출가스에서 <b>NOx 를 환원제 없이 직접 분해</b>하는 촉매를 만드는 과제입니다. 촉매는 금속을 많이 담지할수록 활성이 올라가지만 <b>담지체 기공이 막혀 비표면적이 무너지는 상충</b>이 있었습니다. 문제는 그 상충을 <b class="mine">한 가지 분석으로는 판정할 수 없다</b>는 점이었습니다 — "금속이 붙었다"와 "구조가 안 무너졌다"와 "기공 안에 들어갔다"는 서로 다른 질문이고, 각각 다른 장비가 답합니다.</p>
+
+      <div class="metrics">
+        <div><div class="n">1,206 m²/g</div><div class="k">담체 비표면적 · 3차년도 목표 850 이상</div></div>
+        <div><div class="n">84.4%</div><div class="k">NOx 분해율 @300℃ · 목표 70% 이상</div></div>
+        <div><div class="n">80 h</div><div class="k">500℃ 선택도 90% 이상 유지 · 목표 50 h</div></div>
+      </div>
+
+      <div class="charts">
+        <div class="chart"><h5>온도 구간을 갈라야 조성 효과가 보인다</h5><p class="cap-txt">200~500℃ 네 구간에서 같은 방식으로 재면, 공촉매(V·Co·Mo)를 넣은 쪽이 전 구간에서 앞선다는 것이 드러난다</p><svg viewBox="0 0 520 254" role="img" aria-label="반응온도별 NOx 분해율 — Inha3 시료가 200도 70.6에서 500도 84.4퍼센트로 전 구간에서 목표 70퍼센트를 상회"><line x1="60" y1="196" x2="500" y2="196" stroke="var(--border)" stroke-width="1"/><text x="52" y="199.5" text-anchor="end" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9px">40</text><line x1="60" y1="135.2" x2="500" y2="135.2" stroke="var(--border)" stroke-width="1"/><text x="52" y="138.7" text-anchor="end" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9px">60</text><line x1="60" y1="74.4" x2="500" y2="74.4" stroke="var(--border)" stroke-width="1"/><text x="52" y="77.9" text-anchor="end" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9px">80</text><line x1="60" y1="104.8" x2="500" y2="104.8" stroke="var(--accent)" stroke-width="1.3" stroke-dasharray="5 3"/><text x="52" y="108.3" text-anchor="end" fill="var(--accent)" style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600">70</text><text x="500" y="26" text-anchor="end" fill="var(--accent)" style="font-size:9px">점선 = 3차년도 목표 70%</text><path d="M110 160.4 L230 120.0 L350 122.4 L470 104.8" fill="none" stroke="var(--c2)" stroke-width="1.6"/><circle cx="110" cy="160.4" r="3" fill="var(--c2)"/><circle cx="230" cy="120.0" r="3" fill="var(--c2)"/><circle cx="350" cy="122.4" r="3" fill="var(--c2)"/><circle cx="470" cy="104.8" r="3" fill="var(--c2)"/><path d="M110 117.9 L230 115.5 L350 99.3 L470 97.5" fill="none" stroke="var(--muted)" stroke-width="1.6"/><circle cx="110" cy="117.9" r="3" fill="var(--muted)"/><circle cx="230" cy="115.5" r="3" fill="var(--muted)"/><circle cx="350" cy="99.3" r="3" fill="var(--muted)"/><circle cx="470" cy="97.5" r="3" fill="var(--muted)"/><path d="M110 103.0 L230 68.0 L350 63.6 L470 60.8" fill="none" stroke="var(--c1)" stroke-width="2.4"/><circle cx="110" cy="103.0" r="3.6" fill="var(--c1)"/><circle cx="230" cy="68.0" r="3.6" fill="var(--c1)"/><circle cx="350" cy="63.6" r="3.6" fill="var(--c1)"/><circle cx="470" cy="60.8" r="3.6" fill="var(--c1)"/><text x="230" y="59" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600">82.1</text><text x="470" y="51.8" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600">84.4</text><text x="110" y="94" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:10px">70.6</text><text x="110" y="214" text-anchor="middle" fill="var(--muted)" style="font-size:10px">200℃</text><text x="230" y="214" text-anchor="middle" fill="var(--text)" style="font-size:10px;font-weight:600">300℃</text><text x="230" y="226" text-anchor="middle" fill="var(--muted)" style="font-size:8.5px">KPI 기준 온도</text><text x="350" y="214" text-anchor="middle" fill="var(--muted)" style="font-size:10px">400℃</text><text x="470" y="214" text-anchor="middle" fill="var(--muted)" style="font-size:10px">500℃</text><text x="60" y="26" fill="var(--muted)" style="font-size:9px">NOx 분해율 (%) · 배기가스 조성 CMP PC3</text><text x="60" y="246" fill="var(--muted)" style="font-size:9.5px">Inha1(2종 금속)은 저온에서 목표 미달 — 온도를 갈라 재지 않았으면 평균값에 가려졌다</text></svg><div class="legend"><span><i style="background:var(--c2)"></i>Inha1 · Pt·Ni</span><span><i style="background:var(--muted)"></i>Inha2 · +V</span><span><i style="background:var(--c1)"></i>Inha3 · +V·Co·Mo</span></div></div>
+
+        <div class="chart"><h5>5종 분석 — 각 장비가 답하는 질문이 다르다</h5><p class="cap-txt">"목표를 만족했다"는 한 문장을 뒷받침하려면 서로 다른 다섯 개의 확인이 필요했다</p><svg viewBox="0 0 520 254" role="img" aria-label="5종 분석 교차검증 — TEM은 입자 크기, XRD는 구조 붕괴 여부, SEM은 기공 내 도입, XPS는 조성과 환원 상태, BET는 잔존 기공 특성을 각각 확인"><text x="16" y="26" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.1em">CROSS-CHECK — 하나라도 빠지면 판정이 성립하지 않는다</text><rect x="16" y="36" width="488" height="30" rx="7" fill="none" stroke="var(--c1)" stroke-width="1.4"/><text x="30" y="55" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600">TEM</text><text x="92" y="50" fill="var(--text)" style="font-size:9.5px">입자가 얼마나 작고 고르게 붙었나</text><text x="92" y="61.5" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px">4~6 nm · 뭉침 없음 (목표 8 nm 이하 · 달성 4.5)</text><rect x="16" y="70" width="488" height="30" rx="7" fill="none" stroke="var(--border)" stroke-width="1.2"/><text x="30" y="89" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600">XRD</text><text x="92" y="84" fill="var(--text)" style="font-size:9.5px">담체 구조가 무너지지 않았나</text><text x="92" y="95.5" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px">결정구조 유지 · 담지 전후 변화 없음</text><rect x="16" y="104" width="488" height="30" rx="7" fill="none" stroke="var(--border)" stroke-width="1.2"/><text x="30" y="123" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600">SEM</text><text x="92" y="118" fill="var(--text)" style="font-size:9.5px">표면에 얹힌 게 아니라 기공 안에 들어갔나</text><text x="92" y="129.5" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px">macropore 내 도입 확인 · 표면 뭉침 없음</text><rect x="16" y="138" width="488" height="30" rx="7" fill="none" stroke="var(--border)" stroke-width="1.2"/><text x="30" y="157" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600">XPS</text><text x="92" y="152" fill="var(--text)" style="font-size:9.5px">무엇이 얼마나, 어떤 산화 상태로 있나</text><text x="92" y="163.5" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px">Pt·Ni·V·Co·Mo 조성비 · 환원된 상태 확인</text><rect x="16" y="172" width="488" height="30" rx="7" fill="none" stroke="var(--c1)" stroke-width="1.4"/><text x="30" y="191" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600">BET</text><text x="92" y="186" fill="var(--text)" style="font-size:9.5px">담지하고도 기공이 남았나 — 상충의 판정선</text><text x="92" y="197.5" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px">1,206 m²/g · 중형기공 유지 (목표 850 이상)</text><text x="16" y="222" fill="var(--muted)" style="font-size:9.5px">🔒 담지량을 늘린 조건은 TEM·XPS 만 보면 "성공"으로 읽힌다 — BET 를 같이 보지 않으면 상충을 놓친다</text><text x="16" y="240" fill="var(--muted)" style="font-size:9.5px">이 다섯 항목을 최종평가 발표자료의 목표달성도 5개 장표로 정리했다</text></svg></div>
+      </div>
+
+      <div class="detail">
+        <dl>
+          <dt data-star="S">상황 — 3차년도, 촉매 피독을 막을 공촉매를 넣는 구간</dt>
+          <dd>1·2차년도에 백금 기반 금속간화합물까지 왔고, 3차년도는 <b>촉매 피독을 억제하는 공촉매(V · Co · Mo)</b>를 도입하는 단계였습니다. 저는 <b>촉매 제조와 형상·구조·조성·기공 특성 분석 전 구간</b>을 맡았고, 그해 목표달성도를 입증하는 근거를 만드는 것이 담당 구간이었습니다.</dd>
+
+          <dt data-star="T">과제 — 담지량과 기공은 반대로 움직이고, 한 장비는 한 질문만 답한다</dt>
+          <dd>금속을 많이 담지할수록 <b>담지체 기공이 막혀 비표면적이 무너집니다.</b> 담지량과 기공 특성을 동시에 만족하는 조건을 찾아야 했는데, 여기서 <b class="mine">"확인했다"의 의미가 문제였습니다.</b> TEM 으로 입자가 작다고 확인해도 그것이 기공 안에 들어갔다는 뜻은 아니고, 조성비가 맞다고 구조가 살아 있다는 뜻도 아닙니다.</dd>
+
+          <dt data-star="A">행동 ① 제조 조건을 고정해 비교 가능하게 만들었다</dt>
+          <dd>탄소분자체(CMS)를 <b>KOH 로 활성화</b>(900℃ · 1h · 탄소:KOH 1:1)한 뒤 금속 이온화합물을 담지하고 <b>수소/아르곤 700℃ · 2h 환원</b>으로 다원소 촉매(INHA4~6)를 제조했습니다. 활성화·담지·환원 조건을 시료마다 같게 두어야 <b>조성 차이만 남습니다.</b></dd>
+
+          <dt data-star="A">행동 ② 질문을 다섯 개로 갈라 각각 다른 장비에 물었다</dt>
+          <dd><b>TEM</b> 으로 입자 크기와 분산을, <b>XRD</b> 로 담체 구조 붕괴 여부를, <b>SEM</b> 으로 macropore 내 도입과 표면 뭉침을, <b>XPS</b> 로 Pt·Ni·V·Co·Mo 조성비와 환원 상태를, <b>N₂ 77K 흡탈착</b>으로 비표면적과 기공분포를 각각 확인했습니다. <b class="mine">다섯 개가 전부 같은 방향을 가리킬 때만 조건을 확정</b>했고, 그대로 최종평가 발표자료의 목표달성도 5개 장표가 됐습니다.</dd>
+
+          <dt data-star="A">행동 ③ 성능은 평균이 아니라 온도 구간으로 갈라서 봤다</dt>
+          <dd>반응온도 <b>200 · 300 · 400 · 500℃</b> 네 구간에서 분해율과 선택도를 각각 측정했습니다. 평균 하나로 보고했다면 Inha1 이 <b>저온에서 목표에 미달한다는 사실이 가려졌을 것</b>입니다. 구간을 나눠 재고 나서야 공촉매 도입이 <b>전 구간에서 효과가 있다</b>고 말할 수 있었습니다.</dd>
+
+          <dt data-star="R">결과</dt>
+          <dd>3차년도 정량목표를 전 항목 상회했습니다 — 담체 비표면적 <b class="mine">1,206 m²/g</b>(목표 850 이상) · 나노금속 입자크기 <b>4.5 nm</b>(목표 8 nm 미만) · 촉매활성도 <b>0.145 μmol NOx g⁻¹s⁻¹</b>(목표 0.1 이상) · 반응선택도 <b>71.1%</b>(목표 70 이상) · NOx 분해율 <b>84.4%</b>(목표 70 이상 · @300℃ CMP PC3). 장기내구 평가에서는 <b>500℃에서 선택도 90% 이상을 80시간 유지</b>해 촉매수명 목표(50 h)를 넘겼고, <b>3차년도 개발내용 8건 전 항목 달성도 100%</b>에 기여했습니다.</dd>
+          <dd>Al/Ni 조합에서는 이온교환수지로 <b>CMS 기공 내부에 나노입자를 구속(nano-confinement)</b>해 약 10 nm 균일 입자와 <b>메조기공 비율 18.7%</b>를 확보했고, 비표면적 1,211 m²/g · NOx 전환율 85% · 선택도 95% · 80시간 연속 운전 후에도 전환율 75% · 선택도 90% 유지라는 결과를 <b>Applied Catalysis O: Open 190 (2024) 206937 에 제2저자로 게재</b>했습니다.</dd>
+          <dd class="muted">분해율 목표는 문서마다 다릅니다 — 최종보고서의 연차 목표 서술은 <b>60% 이상</b>, 3차 진도보고서의 정량적 성과목표 표는 <b>70% 이상</b>입니다. 이 포트폴리오는 <b>더 엄격한 쪽(70%)</b>을 기준으로 적었습니다. 목표를 낮게 잡아 달성 폭을 크게 보이게 하지 않으려는 것입니다.</dd>
+
+          <dt>배운 점</dt>
+          <dd class="muted">여기서 <b>"하나의 지표로 판정하지 않는다"</b>가 몸에 붙었습니다. 흡연 프로젝트에서 정확도만으로 모델 교체를 결정하지 않고 <b>McNemar 검정으로 오답 패턴까지 확인</b>한 것, 엔진 프로젝트에서 9종 모델을 <b>같은 분할·같은 지표(F1-macro)로 통일해</b> 비교한 것이 모두 이 습관의 연장입니다.</dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="case" id="r4" style="--dom:var(--amber)">
+      <div class="case-head">
+        <div>
+          <div class="tagrow"><span class="tag">KEIT · 컨소시엄 7기관</span><span class="evid">최종보고서 · 연차보고서</span><span class="status">2023.01 ~ 2024.12 · 산업기술혁신사업 · 공동연구개발기관(인하대학교)</span></div>
+          <h3>낮은 수분투과율 및 Low Outgassing 접착소재</h3>
+          <p class="role">UV 경화형 저온·속경화 에폭시 조성물 선별과 경화조건 확립 담당 — <b class="mine">기관마다 해석이 갈리지 않도록 비교 축을 고정</b> · 물성 분석·데이터 가공·시각화 · 워크숍 발표자료 제공</p>
+        </div>
+      </div>
+
+      <div class="tech"><span class="own">TGA · DSC</span><span class="own">XRD</span><span class="own">FT-IR</span><span class="own">표면처리 3종(산 · 오존 · 상압 플라즈마)</span><span class="own">경화거동 · 계면 물성 평가</span><span>ASTM E595 Outgassing 공인시험</span></div>
+      <p class="techlegend"><b>●</b> 내가 직접 수행 · 표시 없는 항목은 외부 기관 의뢰</p>
+
+      <p class="summary">주관 <b>㈜에버텍엔터프라이즈</b> 와 공동연구개발기관 6곳(이녹스첨단소재 · 파트론 · 한국화학융합시험연구원 · 한국생산기술연구원 · 한국광기술원 · 인하대학교)이 함께한 <b>7기관 컨소시엄</b> 과제입니다. 자동차 카메라 하우징용·항공우주용 접착제는 <b>Low-outgassing 과 80℃ 이하 저온 경화를 동시에</b> 만족해야 하는데, 경화 온도를 낮추면 미반응물이 남아 아웃가싱이 늘어나는 상충이었습니다. 그런데 더 어려운 것은 <b class="mine">일곱 기관이 각자 만들고 각자 재는 상황에서 "조성이 좋아진 것"과 "다르게 잰 것"을 구분하는 일</b>이었습니다.</p>
+
+      <div class="metrics">
+        <div><div class="n">0.31 wt%</div><div class="k">경화 전후 무게감소 · Outgassing 최적화 달성</div></div>
+        <div><div class="n">5/5</div><div class="k">인하대 담당 개발내용 달성도 100%</div></div>
+        <div><div class="n">100℃ · 25분</div><div class="k">최종 확립한 저온·속경화 조건</div></div>
+      </div>
+
+      <div class="charts one">
+        <div class="chart"><h5>결론보다 비교 가능성이 먼저다 — 표면처리 3종을 시간 축으로 갈라 놓기</h5><p class="cap-txt">기관마다 다른 조건으로 재면 조성 효과와 측정 산포가 섞인다. 처리 방법·조건·시간을 전부 고정해 9개 지점을 만들었다</p><svg viewBox="0 0 1060 260" role="img" aria-label="실리카 표면처리 3종 조건 매트릭스 — 산처리 30·60·90분, 오존처리 2·3·4시간, 상압 플라즈마 5·15·30분을 무처리 실리카 기준과 함께 비교"><text x="16" y="26" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.1em">TREATMENT MATRIX — 기준 1 + 처리 3종 × 시간 3점 = 비교 지점 10개</text><rect x="16" y="40" width="200" height="120" rx="10" fill="none" stroke="var(--border)" stroke-width="1.3"/><text x="34" y="66" fill="var(--text)" style="font-size:12px;font-weight:600">NEAT 실리카</text><text x="34" y="86" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px">표면처리 없음</text><text x="34" y="99" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px">모든 비교의 기준선</text><rect x="34" y="112" width="164" height="26" rx="6" fill="none" stroke="var(--border)" stroke-width="1.1" stroke-dasharray="4 3"/><text x="116" y="129" text-anchor="middle" fill="var(--muted)" style="font-size:10px">기준</text><rect x="246" y="40" width="250" height="120" rx="10" fill="none" stroke="var(--c1)" stroke-width="1.7"/><text x="264" y="66" fill="var(--text)" style="font-size:12px;font-weight:600">① 산 표면처리</text><text x="264" y="86" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px">질산:황산 1:3 · 100 mL · 50℃</text><text x="264" y="99" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px">Silica 0.5 g · 진공 100℃ 건조</text><rect x="264" y="112" width="66" height="26" rx="6" fill="none" stroke="var(--c1)" stroke-width="1.1"/><text x="297" y="129" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:9.5px">30 min</text><rect x="336" y="112" width="66" height="26" rx="6" fill="none" stroke="var(--c1)" stroke-width="1.1"/><text x="369" y="129" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:9.5px">60 min</text><rect x="408" y="112" width="66" height="26" rx="6" fill="none" stroke="var(--c1)" stroke-width="1.1"/><text x="441" y="129" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:9.5px">90 min</text><rect x="526" y="40" width="250" height="120" rx="10" fill="none" stroke="var(--c1)" stroke-width="1.7"/><text x="544" y="66" fill="var(--text)" style="font-size:12px;font-weight:600">② 오존 표면처리</text><text x="544" y="86" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px">220 V · 60 Hz · 0.7 L/min · 0.07 MPa</text><text x="544" y="99" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px">7 g/h 생성 · 실온</text><rect x="544" y="112" width="66" height="26" rx="6" fill="none" stroke="var(--c1)" stroke-width="1.1"/><text x="577" y="129" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:9.5px">2 h</text><rect x="616" y="112" width="66" height="26" rx="6" fill="none" stroke="var(--c1)" stroke-width="1.1"/><text x="649" y="129" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:9.5px">3 h</text><rect x="688" y="112" width="66" height="26" rx="6" fill="none" stroke="var(--c1)" stroke-width="1.1"/><text x="721" y="129" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:9.5px">4 h</text><rect x="806" y="40" width="238" height="120" rx="10" fill="none" stroke="var(--c1)" stroke-width="1.7"/><text x="824" y="66" fill="var(--text)" style="font-size:12px;font-weight:600">③ 상압 플라즈마</text><text x="824" y="86" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px">Ar / O₂ · 300 W</text><text x="824" y="99" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px">상압 · 실온</text><rect x="824" y="112" width="64" height="26" rx="6" fill="none" stroke="var(--c1)" stroke-width="1.1"/><text x="856" y="129" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:9.5px">5 min</text><rect x="892" y="112" width="64" height="26" rx="6" fill="none" stroke="var(--c1)" stroke-width="1.1"/><text x="924" y="129" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:9.5px">15 min</text><rect x="960" y="112" width="64" height="26" rx="6" fill="none" stroke="var(--c1)" stroke-width="1.1"/><text x="992" y="129" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:9.5px">30 min</text><text x="16" y="180" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.1em">BEFORE JUDGING — 비교가 성립하는지부터 확인했다</text><rect x="16" y="190" width="1028" height="42" rx="8" fill="none" stroke="var(--border)" stroke-width="1.2"/><rect x="16" y="190" width="4" height="42" rx="2" fill="var(--amber)"/><text x="36" y="209" fill="var(--text)" style="font-size:10.5px">XRD 회절각 22° 피크 유지 — <tspan fill="var(--amber)" font-weight="600">표면만 개질되고 실리카 결정구조는 변하지 않았다</tspan></text><text x="36" y="224" fill="var(--muted)" style="font-size:9.5px">벌크가 바뀌었다면 계면 물성 비교 자체가 성립하지 않는다 · FT-IR 로 도입된 산소 관능기를 함께 확인</text><text x="16" y="252" fill="var(--muted)" style="font-size:9.5px">공인 시험 항목(ASTM E595 Outgassing 등)에 맞춰 단위를 정렬하고 조성·경화조건 축으로 재정렬해, 조성 변경 효과와 측정 산포를 분리한 비교 근거를 워크숍 발표자료로 제공했다</text></svg></div>
+      </div>
+
+      <div class="detail">
+        <dl>
+          <dt data-star="S">상황 — 일곱 기관이 각자 만들고 각자 쟀다</dt>
+          <dd>주관 1곳과 공동연구개발기관 6곳이 소재·부품·시험·양산을 나눠 맡은 컨소시엄이었습니다. 인하대학교는 <b>UV 경화형 저온·속경화 에폭시 조성물 선별과 경화조건 확립</b>을 담당했고, 저는 그 안에서 <b>표면·계면 특성 제어와 물성 분석·데이터 가공</b>을 맡았습니다.</dd>
+
+          <dt data-star="T">과제 — 상충이 둘이었다</dt>
+          <dd>첫째는 재료의 상충입니다. Low-outgassing(휘발응축물 0.1% 미만)과 <b>80℃ 이하 저온 경화</b>를 동시에 만족해야 하는데, <b>경화 온도를 낮추면 미반응물이 남아 아웃가싱이 늘어납니다.</b></dd>
+          <dd>둘째는 협업의 상충이었습니다. 실리카 충전제의 <b>표면 관능기 상태가 계면 물성을 좌우</b>하는데 기관마다 처리 조건이 달라 <b class="mine">"조성을 바꿔서 좋아진 것"과 "다르게 재서 달라 보이는 것"이 구분되지 않았습니다.</b> 이 상태로는 어느 조성을 고를지 논의가 끝나지 않습니다.</dd>
+
+          <dt data-star="A">행동 ① 비교 축을 먼저 고정했다</dt>
+          <dd>표면처리 3종을 <b>시간별로 끊어</b> 만들었습니다 — 산 처리(질산:황산 1:3 용액 100 mL, Silica 0.5 g, 50℃, <b>30 · 60 · 90분</b>), 오존 처리(220 V · 60 Hz, 0.7 L/min · 0.07 MPa 에서 7 g/h 생성, 실온, <b>2 · 3 · 4시간</b>), 상압 플라즈마(Ar/O₂, 300 W, 상압·실온, <b>5 · 15 · 30분</b>). 무처리 실리카를 기준선에 두어 <b>비교 지점 10개</b>를 만들었습니다.</dd>
+          <dd>판정에 들어가기 전에 <b>XRD 로 회절각 22° 피크가 유지되는지</b>부터 확인했습니다. 표면만 개질되고 <b>벌크 결정구조는 변하지 않았음</b>을 확인해야 계면 물성 비교가 성립하기 때문입니다. 도입된 산소 관능기는 FT-IR 로 함께 확인했습니다.</dd>
+
+          <dt data-star="A">행동 ② 경화제 조합을 데이터베이스로 남겼다</dt>
+          <dd>UV 경화 양이온 경화제와 열잠재성 촉매제 조합을 바꿔가며 후보군을 제조하고 <b>TGA/DSC 로 경화 개시온도와 거동을 분석</b>해 선별하면서 <b>UV 경화용 경화제 데이터베이스를 구축</b>했습니다. 낮은 outgassing 을 위한 promoter 연구와 경화 제어기술을 확립하고, void·crack 최소화와 단계별 경화·접합조건을 함께 정리했습니다.</dd>
+
+          <dt data-star="A">행동 ③ 남의 기관이 그대로 쓸 수 있는 형태로 내보냈다</dt>
+          <dd>분석 항목을 <b>조성·경화조건 축으로 재정렬</b>해 추세를 시각화하고, 단위를 <b>공인 시험 항목(ASTM E595 Outgassing 등)에 맞춰 정렬</b>했습니다. 이렇게 <b>조성 변경 효과와 측정 산포를 분리한 비교 근거</b>를 워크숍 발표자료로 제공해 <b class="mine">기관 간 해석 차이로 인한 재실험을 줄였습니다.</b></dd>
+
+          <dt data-star="R">결과</dt>
+          <dd>최종 UV 경화용 에폭시 접착제의 배합을 확정하고(Bisphenol A epoxy + 2PZ + TPO-2 계, 광개시제 Omnicat 250), <b>경화 100℃ · 25분 조건에서 경화 전후 무게감소 0.31 wt%</b> 로 <b class="mine">outgassing 최적화 달성</b>을 확인했습니다. Scale-up 합성분에 대해서도 배합 레시피를 전달받아 <b>Lab-scale 재현성 테스트</b>를 수행했습니다.</dd>
+          <dd>인하대학교 담당 개발내용 <b>5건(표면·계면특성 제어 · 조성물 선별 · 물성 향상 · 경화속도 최적화 · 최종 접착제 확보 및 스케일업 지원) 전 항목 달성도 100%</b> 로 마무리했습니다.</dd>
+
+          <dt>배운 점</dt>
+          <dd class="muted">이 과제에서 얻은 것은 <b>"비교 가능성이 결론보다 먼저다"</b> 입니다. 엔진 프로젝트에서 9종 모델을 <b>같은 분할·같은 지표로 통일해</b> 비교한 것, 흡연 프로젝트에서 발표자료 상관계수를 그대로 인용하지 않고 <b>같은 방법으로 재현되는 7/14개를 명시</b>한 것이 같은 판단입니다.</dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="case" id="r5" style="--dom:var(--amber)">
+      <div class="case-head">
+        <div>
+          <div class="tagrow"><span class="tag">연구재단 · 수소저장</span><span class="evid">2차년도 연차보고서</span><span class="status">2023.01 ~ 2024.12 · 기후기술인재양성 시범사업 · 선도형(인하대)</span></div>
+          <h3>미래유망수소기술인재양성연구단</h3>
+          <p class="role">수소저장 소재 분야 연구원 — 흡착제 합성·활성화·표면처리와 흡착 데이터 분석 담당 · <b class="mine">기공을 무너뜨리지 않는 활성화 조건 탐색</b> · 단계별 교육과정 강의 진행 보조</p>
+        </div>
+      </div>
+
+      <div class="tech"><span class="own">활성화(알칼리염 복합 · 스팀 · 과산화물)</span><span class="own">중형기공 유지 탄화</span><span class="own">표면 관능기 제어</span><span class="own">나노금속 고분산 담지</span><span class="own">TEM</span><span class="own">N₂ 77K 흡탈착</span><span>고압 수소 흡착 측정</span></div>
+      <p class="techlegend"><b>●</b> 내가 직접 수행 · 표시 없는 항목은 연구단 공동 수행</p>
+
+      <p class="summary">물리흡착 기반 수소저장은 가역성·반응속도·경제성에서 유리하지만, 미국 에너지부(DOE)의 중량 대비 저장 목표 <b>5.5 wt.% (298 K, 100 bar)</b> 를 맞추려면 비표면적과 기공구조를 <b>동시에</b> 끌어올려야 합니다. 그런데 표면적을 늘리는 가장 쉬운 방법인 <b>강한 활성화는 기공 붕괴와 에너지 비용을 함께 데려옵니다.</b> 제 담당 구간은 <b class="mine">"성능을 내는 조건"이 아니라 "구조를 지키면서 성능을 내는 조건"</b>을 찾는 쪽이었습니다.</p>
+
+      <div class="metrics">
+        <div><div class="n">DOE 5.5 wt.% 상회</div><div class="k">피라냐 팽창흑연 · 상온 · 대한화학회 133rd 발표</div></div>
+        <div><div class="n">≤ 5 nm</div><div class="k">금속미립자 고분산 · 담지량 5 wt.% 초과</div></div>
+        <div><div class="n">활성화 3경로</div><div class="k">알칼리염 복합 · 스팀 물리 · 과산화물 친환경</div></div>
+      </div>
+
+      <div class="charts one">
+        <div class="chart"><h5>표면적을 늘리는 일과 기공을 지키는 일이 부딪히는 지점</h5><p class="cap-txt">활성화 경로 3종을 병행 비교해 저온·단시간 조건을 찾고, 그 구조를 무너뜨리지 않는 방식으로 금속을 넣었다</p><svg viewBox="0 0 1060 272" role="img" aria-label="수소저장 소재 개발 흐름 — 알칼리염 복합활성화, 스팀 물리활성화, 과산화물 친환경 활성화 3경로를 비교한 뒤 중형기공 유지 탄화, 표면 관능기 제어, 5나노미터 이하 금속 고분산을 거쳐 DOE 목표 5.5 wt퍼센트를 상회"><text x="16" y="26" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.1em">ACTIVATION — 세게 걸수록 표면적은 늘지만 기공이 무너지고 에너지 비용이 커진다</text><rect x="16" y="36" width="330" height="84" rx="10" fill="none" stroke="var(--border)" stroke-width="1.3"/><text x="34" y="60" fill="var(--text)" style="font-size:12px;font-weight:600">알칼리염 2종 복합활성화</text><text x="34" y="80" fill="var(--muted)" style="font-size:9.5px">화학적 활성화 · 표면적 확보에 유리</text><text x="34" y="96" fill="var(--muted)" style="font-size:9.5px">기공 붕괴와 잔류 염 처리가 부담</text><text x="34" y="112" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px">비교군</text><rect x="364" y="36" width="330" height="84" rx="10" fill="none" stroke="var(--border)" stroke-width="1.3"/><text x="382" y="60" fill="var(--text)" style="font-size:12px;font-weight:600">스팀 기반 물리적 활성화</text><text x="382" y="80" fill="var(--muted)" style="font-size:9.5px">구조 손상은 적으나 활성화 효율이 낮음</text><text x="382" y="96" fill="var(--muted)" style="font-size:9.5px">고온·장시간이 필요해 비용이 큼</text><text x="382" y="112" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px">비교군</text><rect x="712" y="36" width="332" height="84" rx="10" fill="none" stroke="var(--c1)" stroke-width="1.7"/><text x="730" y="60" fill="var(--text)" style="font-size:12px;font-weight:600">과산화물 기반 친환경 활성화</text><text x="730" y="80" fill="var(--muted)" style="font-size:9.5px">promoter 도입으로 저온·단시간 조건 탐색</text><text x="730" y="96" fill="var(--muted)" style="font-size:9.5px">활성화 효율과 구조 보존을 함께 노림</text><text x="730" y="112" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:600">담당 개발 경로</text><text x="16" y="142" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.1em">STRUCTURE-PRESERVING — 얻은 기공을 지키면서 금속을 넣는다</text><rect x="16" y="152" width="320" height="46" rx="9" fill="none" stroke="var(--border)" stroke-width="1.2"/><text x="34" y="173" fill="var(--text)" style="font-size:11px;font-weight:600">중형기공 유지 탄화</text><text x="34" y="188" fill="var(--muted)" style="font-size:9.5px">중형기공형 다공성 고분자의 구조 보존</text><line x1="341" y1="175" x2="351" y2="175" stroke="var(--border)" stroke-width="1.4"/><rect x="356" y="152" width="320" height="46" rx="9" fill="none" stroke="var(--border)" stroke-width="1.2"/><text x="374" y="173" fill="var(--text)" style="font-size:11px;font-weight:600">표면 관능기 제어</text><text x="374" y="188" fill="var(--muted)" style="font-size:9.5px">금속이 붙을 자리를 먼저 만든다</text><line x1="681" y1="175" x2="691" y2="175" stroke="var(--c1)" stroke-width="1.4"/><rect x="696" y="152" width="348" height="46" rx="9" fill="none" stroke="var(--c1)" stroke-width="1.6"/><text x="714" y="173" fill="var(--text)" style="font-size:11px;font-weight:600">금속미립자 5 nm 이하 고분산</text><text x="714" y="188" fill="var(--muted)" style="font-size:9.5px">담지량 5 wt.% 초과 · 담지체 기공 파괴 최소화</text><rect x="16" y="212" width="1028" height="44" rx="8" fill="none" stroke="var(--c1)" stroke-width="1.6"/><rect x="16" y="212" width="4" height="44" rx="2" fill="var(--c1)"/><text x="36" y="231" fill="var(--text)" style="font-size:10.5px">피라냐 용액 기반 팽창흑연이 <tspan fill="var(--c1)" font-weight="600">상온에서 DOE 목표 5.5 wt.% 를 상회</tspan> — 대한화학회 133rd General Meeting 발표</text><text x="36" y="247" fill="var(--muted)" style="font-size:9.5px">온도별 흡착량·흡착속도와 기공크기의 상관관계를 데이터로 규명해 저장소재 설계 기준을 마련했다</text></svg></div>
+      </div>
+
+      <div class="detail">
+        <dl>
+          <dt data-star="S">상황 — 수소를 화학적으로 묶지 않고 표면에 붙여 담는다</dt>
+          <dd>고압압축 저장은 안전성·용기 크기 문제가 있고 화학적 저장은 충방전이 느리고 비가역 반응이 따릅니다. <b>물리흡착</b>은 가역성·반응속도·경제성에서 유리한 대안이라 DOE 도 이 경로로 상용 수준 성능을 목표합니다. 저는 수소저장 소재 분야 연구원으로 <b>흡착제 합성·활성화·표면처리와 흡착 데이터 분석</b>을 담당했습니다.</dd>
+
+          <dt data-star="T">과제 — 표면적을 늘리는 손이 기공을 부순다</dt>
+          <dd>중량 대비 저장 목표 <b>5.5 wt.% (298 K, 100 bar)</b> 를 맞추려면 비표면적과 기공구조를 동시에 올려야 합니다. 그런데 표면적을 늘리는 가장 직접적인 방법인 <b>강한 활성화는 기공 붕괴와 에너지 비용을 동반</b>합니다. <b class="mine">한 방향으로 세게 밀면 다른 쪽이 무너지는 구조</b>라, 세기를 올리는 대신 경로를 바꿔야 했습니다.</dd>
+
+          <dt data-star="A">행동 ① 활성화 경로를 셋으로 놓고 병행 비교했다</dt>
+          <dd><b>알칼리염 2종 복합활성화</b>(화학)와 <b>스팀 기반 물리적 활성화</b>를 나란히 두고 비교하면서, <b class="mine">과산화물 기반 친환경·고효율 활성화법</b>(promoter 도입)을 개발해 <b>저온·단시간 조건</b>을 탐색했습니다. 한 경로만 붙들고 세기를 올렸다면 붕괴 구간에 갇혔을 것입니다.</dd>
+
+          <dt data-star="A">행동 ② 얻은 구조를 지키는 순서로 금속을 넣었다</dt>
+          <dd><b>중형기공을 유지하는 탄화기술</b>과 <b>표면 관능기 제어 조건</b>을 개발한 뒤, 그 자리에 <b>금속미립자를 5 nm 이하로 고분산</b>(담지량 5 wt.% 초과)해 <b>담지체 기공구조 파괴를 최소화</b>했습니다. 금속을 먼저 넣고 구조를 걱정하는 순서가 아니라, <b>구조를 만들어 두고 그 위에 금속을 얹는 순서</b>입니다.</dd>
+
+          <dt data-star="A">행동 ③ 조건이 아니라 관계를 데이터로 남겼다</dt>
+          <dd><b>온도에 따른 흡착량·흡착속도와 기공크기의 상관관계</b>를 데이터로 규명했습니다. "이 조건이 제일 좋다"가 아니라 <b class="mine">"기공이 이만큼일 때 이 온도에서 이렇게 거동한다"</b> 로 정리해야 다음 소재를 설계할 때 쓸 수 있기 때문입니다.</dd>
+
+          <dt data-star="R">결과</dt>
+          <dd><b>피라냐 용액 기반 팽창흑연이 상온에서 DOE 목표 5.5 wt.% 를 상회</b>하는 수소 흡착 용량을 보인 결과를 <b>대한화학회 133rd General Meeting</b> 에서 발표했습니다. 온도별 흡착 거동과 기공크기의 관계는 <b>저장소재 설계 기준</b>으로 정리했습니다.</dd>
+          <dd>연구단 활동으로는 <b>단계별 교육과정의 강의 진행을 보조</b>하며 수소 소재분야 동향 분석과 <b>수소기술 DB 구축</b>에 참여했고, 팀 R&amp;D 에서 흡착제 제작·표면처리를 맡아 <b>흡착 등온선·속도 데이터로 소재별 성능을 비교</b>해 연구단 성과공유회 자료의 근거로 제공했습니다.</dd>
+          <dd class="muted">조건이 다른 값은 같은 줄에 놓지 않았습니다 — 왕겨 유래 활성탄의 수소 저장량은 <b>77 K · 1 bar</b> 조건이라 상온 5.5 wt.% 와 나란히 쓸 수 없고, 연구팀이 2011년에 보고한 4.5 wt.% 는 <b>선행연구</b>입니다. 또한 연구단 2차년도 실적(논문 90편 · 교육이수율 100% · 교육만족도 94.7점)은 <b>연구단 전체의 성과</b>이지 개인 성과가 아닙니다.</dd>
+
+          <dt>배운 점</dt>
+          <dd class="muted"><b>성능을 내는 조건과 매번 같은 값을 내는 조건은 다르다</b>는 것을 여기서 배웠습니다. 세게 활성화하면 어떤 시료는 좋은 값이 나오지만 다음 배치에서 기공이 무너집니다. 이터널리턴 프로젝트에서 인수받은 저장소의 <b>출력을 0/6 에서 6/6 으로 복원</b>하며 "한 번 되는 것"과 "언제나 되는 것"을 구분한 것이 같은 문제였습니다.</dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="case" id="r6" style="--dom:var(--amber)">
+      <div class="case-head">
+        <div>
+          <div class="tagrow"><span class="tag">연구재단 · 초고내열</span><span class="evid plan">보안유지 협약 · 보고서 미반출</span><span class="status">2023.03 ~ 2025.02 · 한국연구재단 · BDT 필러 · 계면 코팅 파트</span></div>
+          <h3>극초음속 환경용(≥ 2,500℃) 초고내열 탄소 복합소재 핵심기술 연구</h3>
+          <p class="role">협업 실험·분석과 최적 배합비 탐색 · <b class="mine">랩스케일 → 스케일업 전환 구간에서 측정 조건 불일치와 실제 물성 변화를 분리 판정</b> · 분석 데이터 가공·검증 담당</p>
+        </div>
+      </div>
+
+      <div class="tech"><span class="own">전기폭발법 나노필러 합성</span><span class="own">CVD BN 계면 코팅</span><span class="own">TGA(산화 거동)</span><span class="own">SEM · TEM</span><span class="own">기공율 · 밀도 측정</span><span>고온 인장 · 계면 파괴인성 시험</span><span>아크가열 풍동 시험</span></div>
+      <p class="techlegend"><b>●</b> 내가 직접 수행 · 표시 없는 항목은 외부 기관 · 타 참여기관 수행</p>
+
+      <p class="summary">극초음속 비행체 전면부는 <b>2,500℃ 이상</b>에 노출됩니다. BDT 나노필러와 계면 코팅으로 C/C · CMC 를 제조해 그 환경을 견디게 하는 과제였고, 저는 <b>배합 실험·분석과 스케일업 전환 구간의 데이터 검증</b>을 맡았습니다.</p>
+      <p class="summary" style="margin-top:12px"><b class="mine">이 과제만 보고서를 함께 보여 드릴 수 없습니다 — 보안유지 협약 대상이라 반출이 안 됩니다.</b> 그래서 아래 수치는 <b>연구개발계획서에 명시된 연차별 정량 목표</b>를 기준으로 적었고, <b>제가 참여한 구간에서 이 지표들을 달성했습니다.</b> 다른 5건은 공인성적서·최종보고서를 근거로 댈 수 있지만 이 건은 그럴 수 없다는 점을 <b>미리 밝혀 둡니다.</b></p>
+
+      <div class="metrics">
+        <div><div class="n">850 → 900℃</div><div class="k">산화개시온도 · 단계별 정량목표 <b>달성</b></div></div>
+        <div><div class="n">1.0 → 0.5%</div><div class="k">기공율 · 단계별 정량목표 <b>달성</b></div></div>
+        <div><div class="n">설계인자 5종</div><div class="k">압력·배합비율·적층각도·온도·함침시간</div></div>
+      </div>
+
+      <div class="charts one">
+        <div class="chart"><h5>단계별 목표 사다리 — 참여 구간에서 이 지표들을 달성했다</h5><p class="cap-txt">연구개발계획서가 정한 연차별 정량목표. 달성 근거가 되는 보고서는 보안유지 협약 대상이라 이 페이지에 붙이지 못한다</p><svg viewBox="0 0 1060 272" role="img" aria-label="극초음속 초고내열 복합소재 과제의 연차별 정량 목표 사다리 — 산화개시온도 850에서 900도, 산화율 15에서 10, 기공율 1.0에서 0.5퍼센트, 계면 파괴인성 6에서 8, 열팽창계수 5.0에서 2.0. 참여 구간에서 달성했으나 근거 보고서는 보안유지 협약 대상"><text x="16" y="26" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.1em">TARGET LADDER — 연차별 정량목표 · 참여 구간에서 달성</text><rect x="859" y="40" width="183" height="172" rx="8" fill="none" stroke="var(--c1)" stroke-width="1.4" stroke-dasharray="5 3"/><text x="16" y="56" fill="var(--muted)" style="font-size:10px">정량 평가지표</text><text x="401" y="56" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9px">2차년도</text><text x="584" y="56" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9px">3차년도</text><text x="767" y="56" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:9px">4차년도</text><text x="950" y="56" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600">5차년도 · 최종</text><rect x="16" y="64" width="1026" height="28" rx="6" fill="none" stroke="var(--border)" stroke-width="1.1"/><text x="30" y="83" fill="var(--text)" style="font-size:10.5px">산화개시온도 (℃)</text><text x="401" y="83" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:10px">≥ 850</text><text x="584" y="83" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:10px">≥ 860</text><text x="767" y="83" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:10px">≥ 880</text><text x="950" y="83" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600">≥ 900</text><rect x="16" y="94" width="1026" height="28" rx="6" fill="none" stroke="var(--border)" stroke-width="1.1"/><text x="30" y="113" fill="var(--text)" style="font-size:10.5px">산화율 (mg/cm² · 1300℃ 120min)</text><text x="401" y="113" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:10px">≤ 15</text><text x="584" y="113" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:10px">≤ 13</text><text x="767" y="113" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:10px">≤ 11</text><text x="950" y="113" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600">≤ 10</text><rect x="16" y="124" width="1026" height="28" rx="6" fill="none" stroke="var(--border)" stroke-width="1.1"/><text x="30" y="143" fill="var(--text)" style="font-size:10.5px">기공율 (%)</text><text x="401" y="143" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:10px">≤ 1.0</text><text x="584" y="143" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:10px">≤ 0.8</text><text x="767" y="143" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:10px">≤ 0.6</text><text x="950" y="143" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600">≤ 0.5</text><rect x="16" y="154" width="1026" height="28" rx="6" fill="none" stroke="var(--border)" stroke-width="1.1"/><text x="30" y="173" fill="var(--text)" style="font-size:10.5px">계면 파괴인성 (MPa·m^½ · 25℃)</text><text x="401" y="173" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:10px">≥ 6</text><text x="584" y="173" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:10px">≥ 7</text><text x="767" y="173" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:10px">≥ 7</text><text x="950" y="173" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600">≥ 8</text><rect x="16" y="184" width="1026" height="28" rx="6" fill="none" stroke="var(--border)" stroke-width="1.1"/><text x="30" y="203" fill="var(--text)" style="font-size:10.5px">열팽창계수 CTE</text><text x="401" y="203" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:10px">≤ 5.0</text><text x="584" y="203" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:10px">≤ 4.0</text><text x="767" y="203" text-anchor="middle" fill="var(--muted)" style="font-family:'JetBrains Mono',monospace;font-size:10px">≤ 3.0</text><text x="950" y="203" text-anchor="middle" fill="var(--c1)" style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600">≤ 2.0</text><rect x="16" y="224" width="1026" height="32" rx="8" fill="none" stroke="var(--amber)" stroke-width="1.3" stroke-dasharray="6 3"/><text x="36" y="245" fill="var(--text)" style="font-size:10.5px">🔒 이 표는 <tspan fill="var(--amber)" font-weight="600">계획서가 정한 목표 기준</tspan>이다 — 달성 근거 보고서는 보안유지 협약 대상이라 붙이지 못한다</text><text x="16" y="268" fill="var(--muted)" style="font-size:9.5px">함께 관리된 지표: 탄화수율 35 → 50% · 탄소함량 60 → 75% · 고온인장강도 @1450℃ ≥ 165 MPa</text></svg></div>
+      </div>
+
+      <div class="detail">
+        <dl>
+          <dt data-star="S">상황 — 2,500℃ 이상에서 형상을 지키는 소재</dt>
+          <dd>극초음속 비행체 전면부는 공력 가열로 <b>2,500℃ 이상</b>에 노출되어 일반 내열소재로는 산화·삭마를 견디지 못합니다. 인하대학교는 <b>BDT 나노필러와 계면 코팅</b> 파트를 맡았고, 저는 <b>협업 실험·분석과 최적 배합비 탐색, 그리고 스케일업 전환 구간의 분석 데이터 가공·검증</b>을 담당했습니다.</dd>
+
+          <dt data-star="T">과제 — 인자가 얽혀 있으면 "무엇이 좋았는지" 를 말할 수 없다</dt>
+          <dd>압력 · 배합비율 · 적층각도 · 온도 · 함침시간이 서로 얽혀 있어 <b class="mine">인자를 분리하지 않으면 최적 배합을 특정할 수 없었습니다.</b> 좋은 시편이 나와도 무엇 때문에 좋아졌는지 모르면 다음 배치에서 재현되지 않습니다.</dd>
+          <dd>스케일업 단계에서는 더 곤란한 문제가 나왔습니다 — <b>랩스케일에서 성립한 배합·공정 조건이 스케일업 공정에서 재현되지 않는 구간</b>이 있었는데, 원인이 <b>실제 공정 변화인지 측정·기록 오류인지 구분되지 않아</b> 개선 방향을 정할 수 없었습니다.</dd>
+
+          <dt data-star="A">행동 ① 인자를 분리하고, 측정 조건을 통일했다</dt>
+          <dd><b>BDT 나노필러(W · Ti · TiC · Al₂O₃, 10 nm 이하)</b> 를 전기폭발법으로 합성하고 <b>CVD 기반 BN 계면 코팅</b>을 적용한 시편을 <b>인자별로 반복 제조</b>했습니다. 그리고 다중 분석기기로 교차 검증하되 <b class="mine">분석 항목과 측정 조건부터 통일</b>했습니다 — 조건이 다르면 배합군끼리 비교가 되지 않습니다.</dd>
+
+          <dt data-star="A">행동 ② 재현되지 않는 원인을 둘로 갈라 판정했다</dt>
+          <dd>스케일업 전후 분석 데이터를 <b>항목별로 정렬·가공해 대조</b>하고, <b class="mine">측정 조건이 어긋난 항목</b>과 <b class="mine">물성이 실제로 달라진 항목</b>을 분리 판정했습니다. 측정 조건 불일치로 판정된 항목은 <b>재측정으로 걸러냈습니다.</b> 이 구분을 하지 않고 공정부터 손댔다면, 잰 방식이 달랐을 뿐인 항목 때문에 멀쩡한 공정을 바꿨을 것입니다.</dd>
+
+          <dt data-star="R">결과</dt>
+          <dd>재측정을 거쳐도 <b>반복 재현되는 편차만</b> 공정 인자(함침시간 · 밀도화 조건 등)와 연결해 <b>개선점으로 정리해 공정 최적화에 반영</b>했습니다. 이후 배합 평가가 <b>같은 기준으로 비교되도록 분석 체계를 정리</b>한 것이 담당 구간의 산출물입니다.</dd>
+          <dd>참여 구간의 연차별 정량 목표 — <b>산화개시온도 · 산화율 · 기공율 · 계면 파괴인성 · 열팽창계수(CTE)</b> — 는 <b class="mine">전 항목 달성</b>했습니다. 위 표가 그 기준이고, 배합군을 같은 조건으로 비교할 수 있게 만든 분석 체계가 그 판정을 뒷받침했습니다.</dd>
+          <dd class="muted">다만 그 달성을 증명하는 최종·연차보고서는 <b>보안유지 협약 대상이라 이 포트폴리오에 첨부할 수 없습니다.</b> 다른 5건과 근거의 성격이 다르다는 점을 숨기지 않고 적어 둡니다 — 확인이 필요하시면 면접에서 제출 가능한 범위를 상의드리겠습니다.</dd>
+
+          <dt>배운 점</dt>
+          <dd class="muted">탄산마그네슘 과제에서 배운 <b>"결과가 나쁠 때 도구를 먼저 의심한다"</b> 를 그대로 쓴 사례입니다. 거기서는 미달 원인이 시료가 아니라 분석법이었고, 여기서는 재현 실패의 원인이 공정이 아니라 측정 조건이었습니다. 소재든 데이터든, <b>결과가 어긋났을 때 무엇을 먼저 의심하는가</b>가 판정의 속도를 갈랐습니다.</dd>
+        </dl>
+      </div>
+    </article>
+
+    <p class="sec-note" style="margin:30px 0 0">여섯 과제에 공통으로 걸쳐 있던 담당 구간과, 연구 기간 중 남긴 논문·특허·수상입니다.</p>
+    <div class="rgrid one">
       <div class="rcard">
         <span class="k">연구 역량 요약</span>
         <h4>분석 기기 · 데이터 가공</h4>
